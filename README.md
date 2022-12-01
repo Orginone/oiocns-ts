@@ -26,12 +26,12 @@
    1.1 统一前缀-姓名缩写-描述及日期。如 增加XX功能 `feature/lw/addmain1101`  
    1.2 分支名称前缀如下  
 ````
-- common：调整通用组件、通用功能、通用数据接口、通用样式等  
-- feature：新功能  
-- fix：bug修复  
-- hotfix：线上紧急修复  
-- perf：性能优化  
-- other：配置信息调整等非上面5种的改动改动  
+    - common：调整通用组件、通用功能、通用数据接口、通用样式等  
+    - feature：新功能  
+    - fix：bug修复  
+    - hotfix：线上紧急修复  
+    - perf：性能优化  
+    - other：配置信息调整等非上面5种的改动改动  
 ````
 
 2. 迭代要求：  
@@ -46,11 +46,8 @@
     参考文件：`https://www.bilibili.com/read/cv17617145`
 
 2.如何发布正式版本  
-
  2.1.登录https://www.npmjs.com/注册账号  
-
  2.2.将账号发给仓库管理员，进行组织邀请  
-
  2.3.版本发布（注每个版本都需要发布时，填写发布的内容）
 `npm publish --access public`
 
