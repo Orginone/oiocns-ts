@@ -1,8 +1,9 @@
 <img width="1060" alt="image" src="https://user-images.githubusercontent.com/8328012/201800690-9f5e989e-4ed3-4817-85b9-b594ac89fd31.png">  
 此工程为奥集能平台通用SDK，API提供机制按领域来划分，采用领域模型来提供能力。  
-各领域下有唯一开放模型，比较base目录下为字典模型，基下唯一开放模型为BaseModel，所有字典相关接口均由BaseModel来提供，此类继续了BaseModelApi能力抽象类，此能力抽象类，目前为BaseModel提供原子性后台请求调用接口，所有能力的封装由BaseModel进行粘合并统一提供。  
+各领域下有唯一开放模型，比较base目录下为字典模型，基下唯一开放模型为BaseModel，所有字典相关接口均由BaseModel来提供，此类继续了BaseModelApi能力抽象类，此能力抽象类，目前为BaseModel提供原子性后台请求调用接口，所有能力的封装由BaseModel进行粘合并统一提供。    
 
-此SDK目前正在建设中，对应公库地址为：`https://www.npmjs.com/package/@orginone/oiocns-ts`  
+
+此SDK目前正在建设中，对应公库地址为：https://www.npmjs.com/package/@orginone/oiocns-ts
 
 # 工程目录
 
