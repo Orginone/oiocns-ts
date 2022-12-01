@@ -32,10 +32,10 @@
 - perf：性能优化
 - other：配置信息调整等非上面5种的改动改动
 
-1. 迭代要求：
-   2.1 `main` 分支为主干，所有迭代基于此分支进行获取
-   2.2 所有新功能迭代，问题修复等，需要进行发布，需要提交 `PR` 请求到 `main` 分支。
-   2.3 待系统上线后会拉出 `test` ,后续迭代与 `ISSUE`中问题进行关联的模式
+1. 迭代要求：  
+   2.1 `main` 分支为主干，所有迭代基于此分支进行获取  
+   2.2 所有新功能迭代，问题修复等，需要进行发布，需要提交 `PR` 请求到 `main` 分支。  
+   2.3 待系统上线后会拉出 `test` ,后续迭代与 `ISSUE`中问题进行关联的模式  
 
 
 ## 协同开发步骤
@@ -53,8 +53,8 @@
 `npm publish --access public`
 
 ## 如何使用SDK？  
-1.切换到自己的工程中，输入`npm install @orginone/oiocns-ts`安装最新版本。
-2.引入`import {BaseModel} from "@orginone/oiocns-ts"`使用字典模型
-3.调用`new BaseModel().getInstance().appCreateDict()`进行使用
+1.切换到自己的工程中，输入`npm install @orginone/oiocns-ts`安装最新版本。  
+2.引入`import {BaseModel} from "@orginone/oiocns-ts"`使用字典模型  
+3.调用`new BaseModel().getInstance().appCreateDict()`进行使用  
 
 
