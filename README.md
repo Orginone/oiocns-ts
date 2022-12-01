@@ -46,10 +46,10 @@
     参考文件：`https://www.bilibili.com/read/cv17617145`
 
 2.如何发布正式版本  
- 2.1.登录https://www.npmjs.com/注册账号  
- 2.2.将账号发给仓库管理员，进行组织邀请  
- 2.3.版本发布（注每个版本都需要发布时，填写发布的内容）
-`npm publish --access public`
+   2.1.登录https://www.npmjs.com/注册账号  
+   2.2.将账号发给仓库管理员，进行组织邀请  
+   2.3.版本发布（注每个版本都需要发布时，填写发布的内容）
+      `npm publish --access public`
 
 ## 如何使用SDK？  
 1.切换到自己的工程中，输入`npm install @orginone/oiocns-ts`安装最新版本。  
