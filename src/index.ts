@@ -1,4 +1,4 @@
-import BaseModel from "./core/base/index"
+import BaseModel from "./core/work/index"
 // import ChatModel from "./core/chat/index"
 // import ContextModel from "./core/context/index"
 // import MarketModel from "./core/market/index"

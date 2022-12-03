@@ -1,25 +1,25 @@
-import BaseServiceApi from "./ApiV1"
+import ApiV1 from "./ApiV1"
 
 
 /**
- * 字典类统一模型
+ * 设置统一模型
  */
-export default class BaseModel extends BaseServiceApi{
+export default class SetUpModel extends ApiV1{
   // 单例
-  private static _instance: BaseModel;
+  private static _instance: SetUpModel;
 
   private constructor() {
     super()
   }
 
-  public static getInstance(): BaseModel {
+  public static getInstance(): SetUpModel {
     if (this._instance == null) {
-      this._instance = new BaseModel();
+      this._instance = new SetUpModel();
     }
     return this._instance;
   }
   /** 
-   * 示例DEMO：应用分类创建
+   * 示例DEMO：没有意义，测试api是否能调用通
   */
   public appCreateDict(){
     return this.createDict({  // 唯一ID
