@@ -54,7 +54,7 @@
 
 ## 如何使用SDK？  
 1.切换到自己的工程中，输入`npm install @orginone/oiocns-ts`安装最新版本。  
-2.引入`import {BaseModel} from "@orginone/oiocns-ts"`使用字典模型  
-3.调用`new BaseModel().getInstance().appCreateDict()`进行使用  
+2.引入`import {WorkModel} from "@orginone/oiocns-ts"`使用字典模型  
+3.调用`new WorkModel().getInstance().appCreateDict()`进行使用  
 
 

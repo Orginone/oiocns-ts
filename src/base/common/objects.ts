@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-unused-vars */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -169,7 +169,7 @@ export function equals(one: any, other: any): boolean {
  */
 export function safeStringify(obj: any): string {
   const seen = new Set<any>();
-  return JSON.stringify(obj, (value) => {//key,
+  return JSON.stringify(obj, (key, value) => {
     if (isObject(value) || Array.isArray(value)) {
       if (seen.has(value)) {
         return '[Circular]';

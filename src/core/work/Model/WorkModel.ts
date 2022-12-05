@@ -22,14 +22,17 @@ export default class WorkModel extends ApiV1{
    * 示例DEMO：没有意义，测试api是否能调用通
   */
   public appCreateDict(){
-    return this.createDict({  // 唯一ID
-        id: "1111",
-        name: "222",
-        code: "33",
-        public: true,
-        belongId: 2,
-        remark: "备注"}).then(function(resq){
-        console.log("resq==>",resq);
+    var data = this.createDict({  // 唯一ID
+      id: "1111",
+      name: "222",
+      code: "33",
+      public: true,
+      belongId: "2",
+      remark: "备注"}).then(function(resq){
+      console.log("resq==>",resq);
     })
+    //data 处理
+
+    return data
   }
 }
