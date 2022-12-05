@@ -1,5 +1,5 @@
 import ApiV1 from "./ApiV1"
-
+import PersonSubModel from "./PersonSubModel"
 
 /**
  * 个人统一模型
@@ -19,5 +19,8 @@ export default class PersonalModel extends ApiV1{
     return this._instance;
   }
 
-  
+  public getPersonal(){
+    return new PersonSubModel(schema.XTarget);
+  }
+
 }
