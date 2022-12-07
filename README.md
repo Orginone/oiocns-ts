@@ -4,8 +4,11 @@
 
 此SDK目前正在建设中，对应公库地址为：https://www.npmjs.com/package/@orginone/oiocns-ts
 
+
 # 奥集能应用架构图  
+通用SDK组件为此工程的全局定位，在此工程中，包含所有核心数据交互请求逻辑。为后续应用的迭代提供建设思路  
 ![image](https://user-images.githubusercontent.com/8328012/206221549-9bdf12a3-b56c-473f-933c-d5d30c7537f8.png)
+
 
 
 # 工程目录
@@ -56,8 +59,14 @@
       `npm publish --access public`
 
 ## 如何使用SDK？  
-1.切换到自己的工程中，输入`npm install @orginone/oiocns-ts`安装最新版本。  
-2.引入`import {WorkModel} from "@orginone/oiocns-ts"`使用字典模型  
-3.调用`new WorkModel().getInstance().appCreateDict()`进行使用  
+1.安装并依赖组件  
+`npm install @orginone/oiocns-ts`  
+
+2.使用办事模型   
+`import {WorkModel} from "@orginone/oiocns-ts"`
+
+3.调用进行使用    
+`new WorkModel().getInstance().appCreateDict()`  
+
 
 
