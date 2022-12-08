@@ -1,6 +1,6 @@
-import { schema } from '../../base';
-import { TargetType } from '../enum';
-import Company from './CompanySubModel';
+import { schema } from '../../../base';
+import { TargetType } from '../../enum';
+import Company from './company';
 
 export default class Hospital extends Company {
   constructor(target: schema.XTarget) {

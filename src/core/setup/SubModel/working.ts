@@ -1,13 +1,14 @@
-import { schema } from '@/base';
-import BaseTarget from './ApiV1';
+import { IWorking } from '../../../types/setup/itarget';
+import { schema } from '../../../base';
+import BaseTarget from './base';
 import { TargetType } from '../../enum';
-import { ResultType, TargetModel } from '@/base/model';
+import { ResultType, TargetModel } from '../../../base/model';
 
 /**
  * 工作组的元操作
  */
-export default class Working extends BaseTarget {
-  workings: Working[];
+export default class Working extends BaseTarget implements IWorking {
+  workings: IWorking[];
   person: schema.XTarget[];
   constructor(target: schema.XTarget) {
     super(target);
@@ -15,17 +16,16 @@ export default class Working extends BaseTarget {
     this.workings = [];
     this.person = [];
 
-    //TODO 没有引用
-    // this.pullTypes = [TargetType.Person];
-    // this.subTypes = [TargetType.Working];
-    // this.createTargetType = [TargetType.Working];
+    this.pullTypes = [TargetType.Person];
+    this.subTypes = [TargetType.Working];
+    this.createTargetType = [TargetType.Working];
   }
   public async update(
     data: Omit<TargetModel, 'id'>,
   ): Promise<ResultType<schema.XTarget>> {
     return await super.updateTarget(data);
   }
-  public async getWorkings(reload: boolean = false): Promise<Working[]> {
+  public async getWorkings(reload: boolean = false): Promise<IWorking[]> {
     if (!reload && this.workings.length > 0) {
       return this.workings;
     }

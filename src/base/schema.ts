@@ -34,6 +34,14 @@ export type XAttribute = {
   createTime: string;
   // 更新时间
   updateTime: string;
+  // 字典类型
+  dict: XDict | undefined;
+  // 度量特性对应的类别
+  species: XSpecies | undefined;
+  // 工作职权
+  authority: XAuthority | undefined;
+  // 创建度量标准的组织/个人
+  belong: XTarget | undefined;
 };
 
 //度量特性定义查询返回集合
@@ -71,6 +79,17 @@ export type XAuthority = {
   // 更新人员ID
   updateUser: string;
   // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 上下级职权
+  parent: XAuthority | undefined;
+  // 上下级职权
+  nodes: XAuthority[] | undefined;
+  // 创建职权标准的组织/个人
+  belong: XTarget | undefined;
 };
 
 //职权定义查询返回集合
@@ -109,6 +128,12 @@ export type XDict = {
   version: string;
   // 创建时间
   createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 字典项
+  dictItems: XDictItem[] | undefined;
+  // 创建类别标准的组织/个人
+  belong: XTarget | undefined;
 };
 
 //字典类型查询返回集合
@@ -145,6 +170,12 @@ export type XDictItem = {
   updateUser: string;
   // 修改次数
   version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 字典类型
+  dict: XDict | undefined;
   // 创建类别标准的组织/个人
   belong: XTarget | undefined;
 };
@@ -173,6 +204,16 @@ export type XExtend = {
   destId: string;
   // 所属组织/个人
   belongId: string;
+  // 状态
+  status: number;
+  // 创建人员ID
+  createUser: string;
+  // 更新人员ID
+  updateUser: string;
+  // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
   // 更新时间
   updateTime: string;
   // 资源归属的组织/个人
@@ -369,6 +410,22 @@ export type XFlowTask = {
   identityId: string;
   // 审批人员
   personIds: string;
+  // 状态
+  status: number;
+  // 创建人员ID
+  createUser: string;
+  // 更新人员ID
+  updateUser: string;
+  // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 任务审批的身份
+  identity: XIdentity | undefined;
+  // 流程的定义
+  flowInstance: XFlowInstance | undefined;
 };
 
 //流程任务查询返回集合
@@ -393,6 +450,24 @@ export type XFlowTaskHistory = {
   instanceId: string;
   // 节点分配目标Id
   identityId: string;
+  // 状态
+  status: number;
+  // 创建人员ID
+  createUser: string;
+  // 更新人员ID
+  updateUser: string;
+  // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 流程节点记录
+  flowRecords: XFlowRecord[] | undefined;
+  // 任务审批的身份
+  identity: XIdentity | undefined;
+  // 流程的定义
+  flowInstance: XFlowInstance | undefined;
 };
 
 //流程任务查询返回集合
@@ -428,6 +503,17 @@ export type XIdentity = {
   // 更新人员ID
   updateUser: string;
   // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 赋予身份的组织/个人
+  givenTargets: XTarget[] | undefined;
+  // 身份的类别
+  authority: XAuthority | undefined;
+  // 创建身份的组织/个人
+  belong: XTarget | undefined;
 };
 
 //身份查询返回集合
@@ -534,6 +620,16 @@ export type XMarket = {
   remark: string;
   // 公开的
   public: boolean;
+  // 创建组织/个人
+  belongId: string;
+  // 市场监管组织/个人
+  samrId: string;
+  // 状态
+  status: number;
+  // 创建人员ID
+  createUser: string;
+  // 更新人员ID
+  updateUser: string;
   // 修改次数
   version: string;
   // 创建时间
@@ -916,6 +1012,22 @@ export type XRuleAttr = {
   ruleId: string;
   // 度量标准ID
   attrId: string;
+  // 状态
+  status: number;
+  // 创建人员ID
+  createUser: string;
+  // 更新人员ID
+  updateUser: string;
+  // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 规则
+  ruleStd: XRuleStd | undefined;
+  // 标准
+  attribute: XAttribute | undefined;
 };
 
 //规则与度量标准关系查询返回集合
@@ -946,6 +1058,22 @@ export type XRuleStd = {
   targetId: string;
   // 容器ID
   containerId: string;
+  // 状态
+  status: number;
+  // 创建人员ID
+  createUser: string;
+  // 更新人员ID
+  updateUser: string;
+  // 修改次数
+  version: string;
+  // 创建时间
+  createTime: string;
+  // 更新时间
+  updateTime: string;
+  // 标准要求
+  ruleAttrs: XRuleAttr[] | undefined;
+  // 组织/个人
+  target: XTarget | undefined;
 };
 
 //标准要求查询返回集合
@@ -990,6 +1118,14 @@ export type XSpecies = {
   createTime: string;
   // 更新时间
   updateTime: string;
+  // 分类的结构
+  parent: XSpecies | undefined;
+  // 分类的结构
+  nodes: XSpecies[] | undefined;
+  // 工作职权
+  authority: XAuthority | undefined;
+  // 创建类别标准的组织/个人
+  belong: XTarget | undefined;
 };
 
 //类别定义查询返回集合
@@ -1028,6 +1164,12 @@ export type XStaging = {
   createTime: string;
   // 更新时间
   updateTime: string;
+  // 暂存区针对的市场
+  market: XMarket | undefined;
+  // 创建的组织/个人
+  belong: XTarget | undefined;
+  // 暂存的商品
+  merchandise: XMerchandise | undefined;
 };
 
 //商品暂存查询返回集合
@@ -1070,6 +1212,14 @@ export type XTarget = {
   updateTime: string;
   // 头像
   avatar?: string;
+  // 作为团队的影子
+  team: XTeam | undefined;
+  // 赋予该组织/个人创建的身份
+  givenIdentitys: XIdentity[] | undefined;
+  // 该组织或个人所属的组织/个人
+  belong: XTarget | undefined;
+  // 组织/个人物的本质
+  thing: XThing | undefined;
 };
 
 //组织/个人查询返回集合
@@ -1150,6 +1300,18 @@ export type XThing = {
   createTime: string;
   // 更新时间
   updateTime: string;
+  // 零件
+  nodes: XThing[] | undefined;
+  // 整件
+  parent: XThing[] | undefined;
+  // 物的特性度量值
+  thingAttrValues: XThingAttr[] | undefined;
+  // 给物的分类类别
+  givenSpecies: XSpecies[] | undefined;
+  // 给物的度量标准
+  givenAttributes: XAttribute[] | undefined;
+  // 物的归属
+  belong: XTarget | undefined;
 };
 
 //(物/存在)查询返回集合
@@ -1190,6 +1352,12 @@ export type XThingAttr = {
   createTime: string;
   // 更新时间
   updateTime: string;
+  // 历史度量
+  histroy: XThingAttrHistroy[] | undefined;
+  // 度量的标准
+  attribute: XAttribute | undefined;
+  // 度量的物
+  thing: XThing | undefined;
 };
 
 //物的度量特性查询返回集合
@@ -1226,6 +1394,8 @@ export type XThingAttrHistroy = {
   createTime: string;
   // 更新时间
   updateTime: string;
+  // 最新度量
+  thingAttr: XThingAttr | undefined;
 };
 
 //物的度量特性历史查询返回集合

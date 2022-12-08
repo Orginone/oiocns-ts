@@ -755,6 +755,77 @@ export type FlowInstanceModel = {
   hook: string;
 };
 
+export type CreateDefineReq = {
+  // 唯一Id
+  Id: string;
+  // 名称
+  Name: string;
+  // 编号
+  Code: string;
+  // 备注
+  Remark: string;
+  // 节点信息
+  Resource: FlowNode;
+  // 归属Id
+  BelongId: string;
+  // 流程字段json
+  Fields?: string;
+};
+
+export type FlowNode = {
+  Id: string;
+  NodeId: string;
+  ParentId: string;
+  Type: string;
+  Name: string;
+  Desc: string;
+  Props: Prop;
+  Children: FlowNode;
+  Branches: Branche[];
+};
+
+export type Branche = {
+  Id: string;
+  NodeId: string;
+  ParentId: string;
+  Name: string;
+  Type: string;
+  Conditions: Condition[];
+  Children: FlowNode;
+};
+
+export type Condition = {
+  Pos: number;
+  ParamKey: string;
+  ParamLabel: string;
+  Key: string;
+  Label: string;
+  Type: string;
+  Val: string;
+  ValLabel: string;
+};
+
+export type Prop = {
+  AssignedType: string;
+  Mode: string;
+  AssignedUser: Assigned[];
+  Refuse: Refuse;
+  FriendDialogmode: boolean;
+  Num: number;
+};
+
+export type Assigned = {
+  Id: string;
+  Name: string;
+  Type: string;
+  OrgIds: string;
+};
+
+export type Refuse = {
+  Type: string;
+  Target: string;
+};
+
 export type FlowRelationModel = {
   //流程定义Id
   defineId: string;
@@ -856,4 +927,14 @@ export type FileChunkData = {
   uploadId: string;
   /** 分片数据 */
   data: number[];
+  /** 分片数据编码字符串 */
+  dataUrl: string;
+};
+
+/** 请求失败 */
+export const badRequest = (
+  msg: string = '请求失败',
+  code: number = 400,
+): ResultType<any> => {
+  return { success: false, msg: msg, code: code, data: false };
 };

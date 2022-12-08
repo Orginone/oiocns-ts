@@ -20,6 +20,7 @@
   "devDependencies": {
     "@microsoft/signalr": "6.0.11",
     "@msgpack/msgpack": "2.8.0",
+    "@types/pako": "^2.0.0",
     "axios": "^1.2.0",
     "pako": "^2.0.4",
     "rollup": "^2.76.0",

@@ -1,5 +1,42 @@
+const sizeUnits = ['', 'KB', 'MB', 'GB', 'TB', 'PB'];
+/**
+ * 格式化大小
+ * @param size 大小
+ */
+export function formatSize(size: number, unit: string = ''): string {
+  if (size > 1024) {
+    const index = sizeUnits.indexOf(unit);
+    if (index + 2 < sizeUnits.length) {
+      return formatSize(parseInt((size / 1024.0).toFixed(0)), sizeUnits[index + 1]);
+    }
+  }
+  return size + unit;
+}
+/** 将文件读成url */
+export function blobToDataUrl(file: Blob): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(btoa(reader.result as string));
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+/** 将文件读成字节数组 */
+export function blobToNumberArray(file: Blob): Promise<number[]> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const arr = new Uint8Array(reader.result as ArrayBuffer);
+      resolve(Array.from<number>(arr.values()));
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
 import pako from 'pako';
 
+/** 字符串压缩解压缩 */
 export class StringPako {
   /**
    * 解压缩

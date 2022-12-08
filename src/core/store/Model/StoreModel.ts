@@ -1,26 +1,11 @@
 import { IFileSystemItem } from "@/types/store/ifilesys";
-import ApiV1 from "./ApiV1"
-import {rootDir} from "./FileSysSubModel"
+import {rootDir} from "../SubModel/filesys"
 
 
 /**
  * 仓库统一模型
  */
-export default class StoreModel extends ApiV1{
-  // 单例
-  private static _instance: StoreModel;
-
-  private constructor() {
-    super()
-  }
-
-  public static getInstance(): StoreModel {
-    if (this._instance == null) {
-      this._instance = new StoreModel();
-    }
-    return this._instance;
-  }
-
+class StoreModel{
   /**
    * 获取网盘子业务模型
    * @returns 网盘子业务实例
@@ -29,3 +14,4 @@ export default class StoreModel extends ApiV1{
     return rootDir;
   }
 }
+export default new StoreModel();
