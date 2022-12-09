@@ -1,5 +1,5 @@
 import { schema, model } from '../../base';
-import { MessageType } from '@/core/enum';
+import { MessageType } from '../../core/enum';
 /**
  * 会话接口
  */
