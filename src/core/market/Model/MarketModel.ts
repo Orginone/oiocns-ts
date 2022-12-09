@@ -1,10 +1,14 @@
-import { IMarket, IMTarget, createMarket, DomainTypes } from './SubModel';
+import { IMarket,Market } from '../SubModel';
+import {IMTarget} from '@/types/setting/itarget';
+import {DomainTypes} from "@/core/enum"
 import { kernel } from '@/base';
+import { XMarket } from '@/base/schema';
+
 import { myColumns, marketColumns } from './config';
 import { JOIN_SHOPING_CAR, USER_MANAGEMENT } from '@/core/consts';
 // import { message } from 'antd';
 import { Emitter } from '@/base/common';
-import PersonalModel from '../../personal/Model/PersonalModel';
+import userCtrl from '../../personal/Model/PersonalModel';
 
 export enum MarketCallBackTypes {
   'ApplyData' = 'ApplyData',
@@ -35,11 +39,12 @@ class MarketModel extends Emitter{
   private _shopinglist: any[] = [];
   /** 购买商品的id合集 */
   private _shopingIds: string[] = [];
+  
 
   constructor() {
     super();
     this.searchMarket = [];
-    emitter.subscribePart([DomainTypes.Company, DomainTypes.User], async () => {
+    super.subscribePart([DomainTypes.Company, DomainTypes.User], async () => {
       if (userCtrl.IsCompanySpace) {
         this._target = userCtrl.Company;
       } else {
@@ -64,6 +69,11 @@ class MarketModel extends Emitter{
       this.changCallback();
     });
   }
+
+  public createMarket(data: XMarket):IMarket{
+    return new Market(data);
+  };
+  
 
   /**
    * @description: 获取购物车商品列表的方法
@@ -108,7 +118,7 @@ class MarketModel extends Emitter{
    * @return {*}
    */
   public async changeMenu(menuItem: any) {
-    this._curMarket = menuItem.node ?? createMarket(menuItem); // 当前商店信息
+    this._curMarket = menuItem.node ?? this.createMarket(menuItem); // 当前商店信息
     // 点击重复 则判定为无效
     if (this._currentMenu === menuItem.title) {
       return;
@@ -116,6 +126,7 @@ class MarketModel extends Emitter{
     this._currentMenu = menuItem.title;
     this.getStoreProduct(this.curPageType);
   }
+
 
   /**
    * @desc: 获取表格头部展示数据

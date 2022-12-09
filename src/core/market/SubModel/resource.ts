@@ -1,5 +1,5 @@
-import { kernel, model, schema } from '../../base';
-import IResource from './iresource';
+import { kernel, model, schema } from '@/base';
+import IResource from '@/types/market/iresource';
 
 /**
  * 应用资源操作

@@ -1,5 +1,5 @@
-import { IFileSystemItem } from "@/types/store/ifilesys";
-import {rootDir} from "../SubModel/filesys"
+import DocsSubModel from "../SubModel/DocsSubModel"
+import AppSubModel from "../SubModel/AppSubModel"
 
 
 /**
@@ -10,8 +10,15 @@ class StoreModel{
    * 获取网盘子业务模型
    * @returns 网盘子业务实例
    */
-  public getFileSysSubModel():IFileSystemItem{
-    return rootDir;
+  public getDocsSubModel():DocsSubModel{
+    return new DocsSubModel();
+  }
+  /**
+   * 获取应用业务模型
+   * @returns 应用子业务实例
+   */
+  public getAppSubModel():AppSubModel{
+    return new AppSubModel();
   }
 }
-export default new StoreModel();
+export default new StoreModel()

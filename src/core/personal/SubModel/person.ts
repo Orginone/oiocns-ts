@@ -1,17 +1,16 @@
-import Cohort from './cohort';
-import consts from '../consts';
+import Cohort from '@/core/setting/SubModel/cohort';
+import consts from '@/core/consts';
 import Company from './company';
-import Hospital from './hospital';
-import MarketTarget from '/mbase';
+import Hospital from '@/core/setting/SubModel/hospital';
+import MarketTarget from '@/core/setting/SubModel/mbase';
 import { TargetType } from '@/core/enum';
-import University from './university';
-import { CommonStatus } from './../enum';
+import University from '@/core/setting/SubModel/university';
+import { CommonStatus } from '@/core/enum';
 import { validIsSocialCreditCode } from '@/utils/tools';
-import { ICompany, IPerson, ICohort, SpaceType } from '@/types/setup/itarget';
-import { schema, model, kernel, common } from '@/ts/base';
-import { ResultType, TargetModel } from '@/ts/base/model';
-import { XTarget } from '@/ts/base/schema';
-
+import { ICompany, IPerson, ICohort, SpaceType } from '@/types/setting/itarget';
+import { schema, model, kernel, common } from '@/base';
+import { ResultType, TargetModel } from '@/base/model';
+import { XTarget } from '@/base/schema';
 export default class Person extends MarketTarget implements IPerson {
   joinedFriend: schema.XTarget[];
   joinedCohort: ICohort[];

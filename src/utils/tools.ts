@@ -1,14 +1,14 @@
-import { model } from '@/ts/base';
-import moment from 'moment';
-import { message } from 'antd';
+// import { model } from '@/base';
+// import moment from 'moment';
+// import { message } from 'antd';
 import { formatDate } from '@/utils/index';
-import { DataType, PageData } from 'typings/globelType';
+// import { DataType, PageData } from 'typings/globelType';
 
 const showMessage = (response: any) => {
   if (response.success) {
-    message.success('操作成功！');
+    // message.success('操作成功！');
   } else {
-    message.error('操作失败！发生错误：  ' + response.msg);
+    // message.error('操作失败！发生错误：  ' + response.msg);
   }
 };
 
@@ -46,19 +46,19 @@ const resetParams = (params: any) => {
  * @param res 后台分页响应
  * @returns
  */
-export function toPageData<T extends DataType>(res: model.ResultType<T>): PageData<T> {
-  if (res.success) {
-    return {
-      success: true,
-      data: res.data?.result || [],
-      total: res.data?.total || 0,
-      msg: res.msg,
-    };
-  } else {
-    console.error(res?.msg);
-    return { success: false, data: [], total: 0, msg: res.msg };
-  }
-}
+// export function toPageData<T extends DataType>(res: model.ResultType<T>): PageData<T> {
+//   if (res.success) {
+//     return {
+//       success: true,
+//       data: res.data?.result || [],
+//       total: res.data?.total || 0,
+//       msg: res.msg,
+//     };
+//   } else {
+//     console.error(res?.msg);
+//     return { success: false, data: [], total: 0, msg: res.msg };
+//   }
+// }
 
 // m--n 之间的数字
 const renderNum = (m: number, n: number) => {
@@ -88,24 +88,24 @@ const validIsSocialCreditCode = (code: string) => {
  * @param {moment} chatDate
  * @return {*}
  */
-const showChatTime = (chatDate: moment.MomentInput) => {
-  const cdate = moment(chatDate);
-  const date = moment(cdate.format('yyyy-MM-DD'));
-  const days = moment().diff(date, 'day');
-  switch (days) {
-    case 0:
-      return cdate.format('H:mm');
-    case 1:
-      return '昨天 ' + cdate.format('H:mm');
-    case 2:
-      return '前天 ' + cdate.format('H:mm');
-  }
-  const year = moment().diff(cdate, 'year');
-  if (year == 0) {
-    return cdate.format('M月D日 H:mm');
-  }
-  return cdate.format('yy年 M月D日 H:mm');
-};
+// const showChatTime = (chatDate: moment.MomentInput) => {
+//   const cdate = moment(chatDate);
+//   const date = moment(cdate.format('yyyy-MM-DD'));
+//   const days = moment().diff(date, 'day');
+//   switch (days) {
+//     case 0:
+//       return cdate.format('H:mm');
+//     case 1:
+//       return '昨天 ' + cdate.format('H:mm');
+//     case 2:
+//       return '前天 ' + cdate.format('H:mm');
+//   }
+//   const year = moment().diff(cdate, 'year');
+//   if (year == 0) {
+//     return cdate.format('M月D日 H:mm');
+//   }
+//   return cdate.format('yy年 M月D日 H:mm');
+// };
 
 /**
  * @description: 时间处理
@@ -166,7 +166,7 @@ export {
   handleFormatDate,
   renderNum,
   resetParams,
-  showChatTime,
+  // showChatTime,
   showMessage,
   validIsSocialCreditCode,
 };

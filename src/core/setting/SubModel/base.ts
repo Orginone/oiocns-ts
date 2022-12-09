@@ -1,11 +1,12 @@
-import consts from '../consts';
-import { companyTypes, TargetType } from '../enum';
-import { kernel, model, common, schema } from '../../base';
-import Authority from './authority/authority';
-import { IAuthority } from './authority/iauthority';
-import { IIdentity } from './authority/iidentity';
-import { ITarget } from './itarget';
-import Identity from './authority/identity';
+import consts from '@/core/consts';
+import { companyTypes, TargetType } from '@/core/enum';
+import { kernel, model, common, schema } from '@/base';
+import Authority from '@/core/personal/SubModel/authority';
+import { IAuthority } from '@/types/personal/iauthority';
+import { IIdentity } from '@/types/personal/iidentity';
+import { ITarget } from '@/types/setting/itarget';
+import Identity from '@/core/personal/SubModel/identity';
+
 export default class BaseTarget implements ITarget {
   public target: schema.XTarget;
   public subTypes: TargetType[];

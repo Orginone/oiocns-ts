@@ -1,6 +1,6 @@
-import { schema, kernel, model, common } from '../../base';
-import { TargetType, MessageType } from '../enum';
-import { ChatCache, IChat } from './ichat';
+import { schema, kernel, model, common } from '@/base';
+import { TargetType, MessageType } from '@/core/enum';
+import { ChatCache, IChat } from '@/types/communicate/ichat';
 
 // 历史会话存储集合名称
 const hisMsgCollName = 'chat-message';

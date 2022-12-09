@@ -1,6 +1,6 @@
 import Market from './market';
 import Merchandise from './merchandise';
-import WebApp from './webapp';
+import WebApp from '../../setting/SubModel/webapp';
 import IMarket from '@/types/market/imarket';
 import IProduct from '@/types/market/iproduct';
 import IMerchandise from '@/types/market/imerchandise';

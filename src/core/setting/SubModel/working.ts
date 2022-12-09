@@ -1,4 +1,4 @@
-import { IWorking } from '../../../types/setup/itarget';
+import { IWorking } from '../../../types/setting/itarget';
 import { schema } from '../../../base';
 import BaseTarget from './base';
 import { TargetType } from '../../enum';

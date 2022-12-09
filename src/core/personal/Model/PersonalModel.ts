@@ -6,7 +6,7 @@ import {
   ICompany,
   ISpace,
   ICohort,
-} from '@/types/setup/itarget';
+} from '@/types/setting/itarget';
 import Person from '../SubModel/person'
 
 const sessionUserName = 'sessionUser';
@@ -145,7 +145,7 @@ class PersonalModel extends Emitter {
     this._curSpace = undefined;
     await this._user.getJoinedCompanys(false);
     this.changCallbackPart(DomainTypes.User);
-    emitter.changCallbackPart(DomainTypes.User);
+    // super.changCallbackPart(DomainTypes.User);
   }
 
   private _findCompany(id: string): ICompany | undefined {

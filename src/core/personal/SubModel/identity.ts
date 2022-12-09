@@ -1,6 +1,6 @@
 import { schema, model, kernel, common } from '@/base';
 import { TargetType } from '@/core/enum';
-import { IIdentity } from './iidentity';
+import { IIdentity } from '../../../types/personal/iidentity';
 
 export default class Identity implements IIdentity {
   private readonly _identity: schema.XIdentity;

@@ -28,4 +28,4 @@ export const LoadChats = async (userId: string): Promise<IChatGroup[]> => {
   return groups;
 };
 
-export type { IChat, IChatGroup } from './ichat';
+export type { IChat, IChatGroup } from '@/types/communicate/ichat';
