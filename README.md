@@ -1,7 +1,8 @@
 <img width="1060" alt="image" src="https://user-images.githubusercontent.com/8328012/201800690-9f5e989e-4ed3-4817-85b9-b594ac89fd31.png">  
 此工程为奥集能平台通用SDK，API提供机制按领域来划分，采用领域模型来提供能力。  
-各领域下有唯一开放模型，比较store目录下为`仓库业务模型`，其下唯一开放模型为StoreModel(外部调用统一使用主业务模型)，所有办事相关接口均由StoreModel来提供,办事下还有SubModel为统一子业务模型存放目录，存放`应用子业务模型`以及`文档子业务模型`，子业务模型为主业务模型提供能力，统一由主业务模型进行外部调用
-
+各领域下有唯一开放模型，比较store目录下为【仓库业务模型】 ，其下唯一开放模型为StoreModel(外部调用统一使用主业务模型)，所有办事相关接口均由StoreModel来提供,办事下还有SubModel为统一子业务模型存放目录，存放【应用子业务模】以及【文档子业务模型】，子业务模型为主业务模型提供能力，统一由主业务模型进行外部调用  
+  
+  
 此SDK目前正在建设中，对应公库地址为：https://www.npmjs.com/package/@orginone/oiocns-ts
 
 
