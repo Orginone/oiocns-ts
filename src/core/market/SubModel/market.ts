@@ -1,7 +1,7 @@
-import IMarket from '@/types/market/imarket';
-import { kernel } from '@/base/index';
-import { model, schema } from '@/base/index';
-import { TargetType, companyTypes } from '@/core/enum';
+import IMarket from '../../../types/market/imarket';
+import { kernel } from '../../../base/index';
+import { model, schema } from '../../../base/index';
+import { TargetType, companyTypes } from '../../enum';
 
 export default class Market implements IMarket {
   market: schema.XMarket;

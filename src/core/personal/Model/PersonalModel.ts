@@ -1,12 +1,12 @@
-import { Emitter } from '@/base/common';
-import { kernel, model, schema } from '@/base';
-import {DomainTypes} from '@/core/enum'
+import { Emitter } from '../../../base/common';
+import { kernel, model, schema } from '../../../base';
+import {DomainTypes} from '../../../core/enum'
 import {
   IPerson,
   ICompany,
   ISpace,
   ICohort,
-} from '@/types/setting/itarget';
+} from '../../../types/setting/itarget';
 import Person from '../SubModel/person'
 
 const sessionUserName = 'sessionUser';

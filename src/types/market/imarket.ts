@@ -1,6 +1,6 @@
-import { model, schema } from '@/base';
-import { XMarketRelationArray, XMerchandiseArray } from '@/base/schema';
-import { TargetType } from '@/core/enum';
+import { model, schema } from '../../base';
+import { XMarketRelationArray, XMerchandiseArray } from '../../base/schema';
+import { TargetType } from '../../core/enum';
 export default interface IMarket {
   /** 市场实体 */
   market: schema.XMarket;

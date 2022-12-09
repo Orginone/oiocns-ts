@@ -1,4 +1,4 @@
-import { model, schema } from '@/base';
+import { model, schema } from '../../base';
 import IMerchandise from './imerchandise';
 import IResource from './iresource';
 

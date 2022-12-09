@@ -1,5 +1,5 @@
-import { model, schema } from '@/base';
-import { TargetType } from '@/core/enum';
+import { model, schema } from '../../base';
+import { TargetType } from '../../core/enum';
 
 export interface IIdentity {
   /** 实体对象 */

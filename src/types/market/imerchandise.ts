@@ -1,4 +1,4 @@
-import { model, schema } from '@/base';
+import { model, schema } from '../../base';
 export default interface IMerchandise {
   /** 商品实例 */
   merchandise: schema.XMerchandise;

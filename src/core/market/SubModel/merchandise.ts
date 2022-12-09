@@ -1,5 +1,5 @@
-import { kernel, model, schema } from '@/base';
-import IMerchandise from '@/types/market/imerchandise';
+import { kernel, model, schema } from '../../../base';
+import IMerchandise from '../../../types/market/imerchandise';
 
 export default class Merchandise implements IMerchandise {
   merchandise: schema.XMerchandise;

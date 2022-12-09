@@ -1,7 +1,7 @@
-import consts from '@/core/consts';
-import { CommonStatus, TodoType } from '@/core/enum';
-import { ITodoGroup, IApprovalItem, IApplyItem, IOrderApplyItem } from '@/types/work/itodo';
-import { model, kernel, schema, common } from '@/base';
+import consts from '../../consts';
+import { CommonStatus, TodoType } from '../../enum';
+import { ITodoGroup, IApprovalItem, IApplyItem, IOrderApplyItem } from '../../../types/work/itodo';
+import { model, kernel, schema, common } from '../../../base';
 
 export class OrderTodo implements ITodoGroup {
   name: string = '订单审批';

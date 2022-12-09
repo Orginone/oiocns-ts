@@ -1,7 +1,7 @@
-import { blobToDataUrl, generateUuid } from '@/base/common';
-import { BucketOpreateModel, BucketOpreates, FileItemModel } from '@/base/model';
-import { model, kernel } from '@/base';
-import { IFileSystemItem, IObjectItem, OnProgressType } from '@/types/store/ifilesys';
+import { blobToDataUrl, generateUuid } from '../../../base/common';
+import { BucketOpreateModel, BucketOpreates, FileItemModel } from '../../../base/model';
+import { model, kernel } from '../../../base';
+import { IFileSystemItem, IObjectItem, OnProgressType } from '../../../types/store/ifilesys';
 /**
  * 文件系统项实现
  */

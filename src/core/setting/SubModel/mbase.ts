@@ -1,6 +1,6 @@
 import WebApp from './webapp';
 import { common, kernel, model, schema } from '../../../base';
-import  Market  from '@/core/market/SubModel/market';
+import  Market  from '../../market/SubModel/market';
 import { ProductType, TargetType } from '../../enum';
 import { IMTarget } from '../../../types/setting/itarget';
 import FlowTarget from './flow';

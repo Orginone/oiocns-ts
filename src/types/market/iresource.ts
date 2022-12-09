@@ -1,4 +1,4 @@
-import { schema, model } from '@/base';
+import { schema, model } from '../../base';
 
 export default interface IResource {
   /** 资源实体 */

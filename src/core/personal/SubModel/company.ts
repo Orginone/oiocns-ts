@@ -1,13 +1,13 @@
 import Group from '../../setting/SubModel/group';
 import Cohort from '../../setting/SubModel/cohort';
-import consts from '@/core/consts';
+import consts from '../../consts';
 import MarketTarget from '../../setting/SubModel/mbase';
-import { TargetType } from '@/core/enum';
+import { TargetType } from '../../enum';
 import { ResultType, TargetModel } from '@/base/model';
 import Department from './department';
-import { validIsSocialCreditCode } from '@/utils/tools';
-import { schema, kernel, common, model } from '@/base';
-import { IGroup, ICompany, ICohort, IDepartment, IWorking, SpaceType } from '@/types/setting/itarget';
+import { validIsSocialCreditCode } from '../../../utils/tools';
+import { schema, kernel, common, model } from '../../../base';
+import { IGroup, ICompany, ICohort, IDepartment, IWorking, SpaceType } from '../../../types/setting/itarget';
 import Working from '../../setting/SubModel/working';
 /**
  * 公司的元操作

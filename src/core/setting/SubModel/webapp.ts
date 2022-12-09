@@ -1,9 +1,9 @@
-import { common } from '@/base';
+import { common } from '../../../base';
 import Resource from '../../market/SubModel/resource';
-import IProduct from '@/types/market/iproduct';
-import { CommonStatus } from '@/core/enum';
+import IProduct from '../../../types/market/iproduct';
+import { CommonStatus } from '../../enum';
 import Merchandise from '../../market/SubModel/merchandise';
-import { kernel, model, schema } from '@/base';
+import { kernel, model, schema } from '../../../base';
 
 export default class WebApp implements IProduct {
   prod: schema.XProduct;

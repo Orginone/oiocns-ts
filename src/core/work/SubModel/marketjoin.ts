@@ -1,7 +1,7 @@
-import { common } from '@/base';
-import { CommonStatus, TodoType } from '@/core/enum';
-import { ITodoGroup, IApprovalItem, IApplyItem } from '@/types/work/itodo';
-import { model, kernel, schema } from '@/base';
+import { common } from '../../../base';
+import { CommonStatus, TodoType } from '../../enum';
+import { ITodoGroup, IApprovalItem, IApplyItem } from '../../../types/work/itodo';
+import { model, kernel, schema } from '../../../base';
 
 class MarketJoinTodo implements ITodoGroup {
   private _name: string;

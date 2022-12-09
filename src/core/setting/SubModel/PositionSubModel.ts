@@ -1,9 +1,9 @@
-import { kernel } from '@/base';
-import { MY_POSITION_LIST } from '@/core/consts';
+import { kernel } from '../../../base';
+import { MY_POSITION_LIST } from '../../consts';
 // import { message } from 'antd';
-import { Emitter } from '@/base/common';
-import userCtrl from '@/core/personal/Model/PersonalModel';
-import { DomainTypes } from '@/core/enum';
+import { Emitter } from '../../../base/common';
+import userCtrl from '../../personal/Model/PersonalModel';
+import { DomainTypes } from '../../enum';
 
 export enum PostitonCallBackTypes {
   'ApplyData' = 'ApplyData',

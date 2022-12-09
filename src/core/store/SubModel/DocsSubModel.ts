@@ -1,7 +1,7 @@
 import { rootDir } from './filesys';
-import { IFileSystemItem, IObjectItem } from '@/types/store/ifilesys';
-import { DomainTypes} from '@/core/enum';
-import { Emitter } from '@/base/common';
+import { IFileSystemItem, IObjectItem } from '../../../types/store/ifilesys';
+import { DomainTypes} from '../../enum';
+import { Emitter } from '../../../base/common';
 
 /** 任务模型 */
 export type TaskModel = {

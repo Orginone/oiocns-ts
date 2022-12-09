@@ -1,5 +1,5 @@
 import { IIdentity } from './iidentity';
-import { model, schema } from '@/base';
+import { model, schema } from '../../base';
 
 export interface IAuthority {
   /** 职权Id */

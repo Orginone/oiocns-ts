@@ -1,10 +1,10 @@
-import consts from '@/core/consts';
+import consts from '../../consts';
 import BaseTarget from './base';
-import { ResultType, TargetModel } from '@/base/model';
-import { XTarget } from '@/base/schema';
-import { IGroup } from '@/types/setting/itarget';
-import { TargetType } from '@/core/enum';
-import { model, kernel } from '@/base';
+import { ResultType, TargetModel } from '../../../base/model';
+import { XTarget } from '../../../base/schema';
+import { IGroup } from '../../../types/setting/itarget';
+import { TargetType } from '../../enum';
+import { model, kernel } from '../../../base';
 
 export default class Group extends BaseTarget implements IGroup {
   subGroup: IGroup[];

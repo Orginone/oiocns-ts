@@ -1,6 +1,6 @@
-import { ITodoGroup, IApprovalItem, IApplyItem } from '@/types/work/itodo';
-import { model, kernel, schema } from '@/base';
-import { TodoType } from '@/core/enum';
+import { ITodoGroup, IApprovalItem, IApplyItem } from '../../../types/work/itodo';
+import { model, kernel, schema } from '../../../base';
+import { TodoType } from '../../enum';
 
 class ApplicationTodo implements ITodoGroup {
   private _id: string;

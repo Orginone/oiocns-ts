@@ -1,6 +1,6 @@
-import { TodoType } from '@/core/enum';
-import { model } from '@/base';
-import { XOrder } from '@/base/schema';
+import { TodoType } from '../../core/enum';
+import { model } from '../../base';
+import { XOrder } from '../../base/schema';
 
 /** 待办组 */
 export interface ITodoGroup {

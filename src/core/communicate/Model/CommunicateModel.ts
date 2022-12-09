@@ -1,10 +1,10 @@
-import { kernel } from '@/base';
-import { XImMsg } from '@/base/schema';
-import { IChat, IChatGroup } from '@/types/communicate/ichat';
+import { kernel } from '../../..//base';
+import { XImMsg } from '../../../base/schema';
+import { IChat, IChatGroup } from '../../../types/communicate/ichat';
 import { LoadChats } from '../SubModel';
 import userCtrl from '../../personal/Model/PersonalModel';
-import { DomainTypes, TargetType } from '@/core/enum';
-import { Emitter } from '@/base/common';
+import { DomainTypes, TargetType } from '../../enum';
+import { Emitter } from '../../../base/common';
 /**
  * 沟通统一模式
  */

@@ -1,13 +1,13 @@
 import { IMarket,Market } from '../SubModel';
-import {IMTarget} from '@/types/setting/itarget';
-import {DomainTypes} from "@/core/enum"
-import { kernel } from '@/base';
-import { XMarket } from '@/base/schema';
+import {IMTarget} from '../../../types/setting/itarget';
+import {DomainTypes} from "../../enum"
+import { kernel } from '../../../base';
+import { XMarket } from '../../../base/schema';
 
 import { myColumns, marketColumns } from './config';
-import { JOIN_SHOPING_CAR, USER_MANAGEMENT } from '@/core/consts';
+import { JOIN_SHOPING_CAR, USER_MANAGEMENT } from '../../consts';
 // import { message } from 'antd';
-import { Emitter } from '@/base/common';
+import { Emitter } from '../../../base/common';
 import userCtrl from '../../personal/Model/PersonalModel';
 
 export enum MarketCallBackTypes {

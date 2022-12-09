@@ -1,10 +1,10 @@
-import { TargetModel } from '@/base/model';
-import BaseTarget from '@/core/setting/SubModel/base';
-import { TargetType } from '@/core/enum';
-import { schema } from '@/base';
-import { IDepartment, IWorking } from '@/types/setting/itarget';
-import { ResultType } from '@/base/model';
-import Working from '@/core/setting/SubModel/working';
+import { TargetModel } from '../../../base/model';
+import BaseTarget from '../../setting/SubModel/base';
+import { TargetType } from '../../enum';
+import { schema } from '../../../base';
+import { IDepartment, IWorking } from '../../../types/setting/itarget';
+import { ResultType } from '../../../base/model';
+import Working from '../../setting/SubModel/working';
 
 /**
  * 部门的元操作

@@ -1,7 +1,7 @@
-import { kernel } from '@/base';
-import { TargetType } from '@/core/enum';
+import { kernel } from '../../../base';
+import { TargetType } from '../../enum';
 import { CreateChat } from './chat';
-import { IChatGroup } from '@/types/communicate/ichat';
+import { IChatGroup } from '../../../types/communicate/ichat';
 /**
  * 加载通讯录会话
  * @returns 会话接口数组

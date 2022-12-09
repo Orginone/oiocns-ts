@@ -1,8 +1,8 @@
-import { TargetType } from '@/core/enum';
+import { TargetType } from '../../enum';
 import BaseTarget from './base';
-import { schema } from '@/base';
-import { ICohort } from '@/types/setting/itarget';
-import { ResultType, TargetModel } from '@/base/model';
+import { schema } from '../../../base';
+import { ICohort } from '../../../types/setting/itarget';
+import { ResultType, TargetModel } from '../../../base/model';
 
 export default class Cohort extends BaseTarget implements ICohort {
   children: schema.XTarget[];

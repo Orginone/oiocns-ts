@@ -2,9 +2,9 @@ import {  loadAppTodo,
   loadMarketTodo,
   loadOrderTodo,
   loadOrgTodo,
-  loadPublishTodo,ITodoGroup} from '@/core/work/SubModel/index';
-import { Emitter } from '@/base/common';
-import { DomainTypes } from '@/core/enum';
+  loadPublishTodo,ITodoGroup} from '../../work/SubModel/index';
+import { Emitter } from '../../../base/common';
+import { DomainTypes } from '../../enum';
 
 /**
  * 办事类统一模型

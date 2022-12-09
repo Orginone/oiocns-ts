@@ -1,9 +1,9 @@
-import { kernel } from '@/base';
-import { Emitter } from '@/base/common';
-import { DomainTypes} from '@/core/enum';
-import  {IMTarget} from '@/types/setting/itarget';
-import IProduct from '@/types/market/iproduct';
-import userCtrl from '@/core/personal/Model/PersonalModel';
+import { kernel } from '../../../base';
+import { Emitter } from '../../../base/common';
+import { DomainTypes} from '../../enum';
+import  {IMTarget} from '../../../types/setting/itarget';
+import IProduct from '../../../types/market/iproduct';
+import userCtrl from '../../personal/Model/PersonalModel';
 const AppStoreName = 'AppStore';
 
 export interface TreeType {

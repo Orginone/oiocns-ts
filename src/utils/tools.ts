@@ -12,17 +12,17 @@ const showMessage = (response: any) => {
   }
 };
 
-const debounce = (fun: any, delay?: number) => {
-  let timer: any = '';
-  let that = this;
-  return (args: any) => {
-    let _args = args;
-    clearTimeout(timer);
-    timer = setTimeout(function () {
-      fun.call(that, _args);
-    }, delay ?? 300);
-  };
-};
+// const debounce = (fun: any, delay?: number) => {
+//   let timer: any = '';
+//   let that = this;
+//   return (args: any) => {
+//     let _args = args;
+//     clearTimeout(timer);
+//     timer = setTimeout(function () {
+//       fun.call(that, _args);
+//     }, delay ?? 300);
+//   };
+// };
 
 /**
  * @desc: 处理 翻页参数问题
@@ -160,13 +160,11 @@ const findAimObj = (isParent = false, id: string, topParentData?: any[]) => {
   return aimObjet;
 };
 export {
-  debounce,
   findAimObj,
   getUuid,
   handleFormatDate,
   renderNum,
   resetParams,
-  // showChatTime,
   showMessage,
   validIsSocialCreditCode,
 };

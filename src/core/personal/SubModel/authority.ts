@@ -1,7 +1,7 @@
-import { common, kernel, model, schema } from '@/base';
-import { IAuthority } from '@/types/personal/iauthority';
+import { common, kernel, model, schema } from '../../../base';
+import { IAuthority } from '../../../types/personal/iauthority';
 import { AuthorityType } from '../../enum';
-import consts from '@/core/consts';
+import consts from '../../../core/consts';
 import Identity from './identity';
 
 export default class Authority implements IAuthority {

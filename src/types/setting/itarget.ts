@@ -1,10 +1,10 @@
-import { model, schema } from '@/base';
-import { ResultType, TargetModel } from '@/base/model';
-import { TargetType } from '@/core/enum';
-import  IMarket from '@/types/market/imarket';
-import IProduct from '@/types/market/iproduct';
-import { IAuthority } from '@/types/personal/iauthority';
-import { IIdentity } from '@/types/personal/iidentity';
+import { model, schema } from '../../base';
+import { ResultType, TargetModel } from '../../base/model';
+import { TargetType } from '../../core/enum';
+import  IMarket from '../../types/market/imarket';
+import IProduct from '../../types/market/iproduct';
+import { IAuthority } from '../../types/personal/iauthority';
+import { IIdentity } from '../../types/personal/iidentity';
 
 /** 空间类型数据 */
 export type SpaceType = {
