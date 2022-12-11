@@ -19,6 +19,7 @@ export enum MarketCallBackTypes {
  * 市场统一模型
  */
 class MarketModel extends Emitter{
+  
   /** 市场操作对象 */
   private _target: IMTarget | undefined;
   /** 当前操作的市场 */
@@ -32,36 +33,28 @@ class MarketModel extends Emitter{
   /** 搜索到的商店 */
   public searchMarket: any;
   /** 所有的用户 */
-  public marketMenber: any;
+  public marketMenber: any = {};
   /** 加入购物车商品 */
   public JoinShopingCar: any[] = [];
   /** 购物车商品列表 */
   private _shopinglist: any[] = [];
   /** 购买商品的id合集 */
   private _shopingIds: string[] = [];
-  
 
   constructor() {
     super();
     this.searchMarket = [];
     super.subscribePart([DomainTypes.Company, DomainTypes.User], async () => {
-      if (userCtrl.IsCompanySpace) {
-        this._target = userCtrl.Company;
-      } else {
-        this._target = userCtrl.User;
-      }
-      this._curMarket = (await this._target.getPublicMarket(true))[0];
+      this._target = userCtrl.space;
       await this._target.getJoinMarkets();
       /* 获取 历史缓存的 购物车商品列表 */
       kernel.anystore.subscribed(JOIN_SHOPING_CAR, 'user', (shoplist: any) => {
-        // console.log('订阅数据推送 购物车商品列表===>', shoplist.data);
         const { data = [] } = shoplist;
         this._shopinglist = data || [];
         this.changCallbackPart(MarketCallBackTypes.ApplyData);
       });
       /* 获取 历史缓存的 商店用户管理成员 */
       kernel.anystore.subscribed(USER_MANAGEMENT, 'uset', (managementlist: any) => {
-        // console.log('订阅数据推送 商店用户管理成员===>', managementlist?.data);
         const { data = [] } = managementlist;
         this.marketMenber = data || [];
         this.changCallbackPart(MarketCallBackTypes.UserManagement);
@@ -69,11 +62,6 @@ class MarketModel extends Emitter{
       this.changCallback();
     });
   }
-
-  public createMarket(data: XMarket):IMarket{
-    return new Market(data);
-  };
-  
 
   /**
    * @description: 获取购物车商品列表的方法
@@ -127,7 +115,6 @@ class MarketModel extends Emitter{
     this.getStoreProduct(this.curPageType);
   }
 
-
   /**
    * @desc: 获取表格头部展示数据
    * @return {*}
@@ -155,10 +142,7 @@ class MarketModel extends Emitter{
       limit: params?.pageSize ?? 10,
       filter: '',
     };
-    const res = await this._curMarket?.getMerchandise(params);
-    if (res?.code === 200 && res?.success) {
-      this._marketTableList = res?.data;
-    }
+    this._marketTableList = await this._curMarket?.getMerchandise(params);
     this.changCallbackPart(MarketCallBackTypes.MarketShop);
   };
 
@@ -166,13 +150,15 @@ class MarketModel extends Emitter{
    * @description: 获取市场里的所有用户
    * @return {*}
    */
-  public async getMember() {
-    const res = await this._curMarket?.getMember({ offset: 0, limit: 10, filter: '' });
-    if (res?.success) {
-      this.marketMenber = res?.data?.result;
-    }
+  public getMember = async (params?: any) => {
+    params = {
+      offset: (params?.page - 1) * params?.pageSize ?? 0,
+      limit: params?.pageSize ?? 10,
+      filter: params?.filter ?? '',
+    };
+    this.marketMenber = await this._curMarket?.getMember({ ...params });
     this.cacheUserManagement(this.marketMenber);
-  }
+  };
 
   /**
    * @description: 移出市场里的成员
@@ -180,10 +166,7 @@ class MarketModel extends Emitter{
    * @return {*}
    */
   public removeMember = async (targetIds: string[]) => {
-    const res = await this._curMarket?.removeMember(targetIds);
-    if (res?.code === 400) {
-      // message.warning(res.msg);
-    } else if (res?.code === 200 && res?.success) {
+    if (await this._curMarket?.removeMember(targetIds)) {
       if (this.marketMenber.length > 0) {
         let arrs = this.marketMenber.filter((item: any) =>
           targetIds.some((ele: any) => ele.id === item?.target?.id),
@@ -225,6 +208,7 @@ class MarketModel extends Emitter{
         (item) => !data.some((ele: any) => ele.id === item.id),
       );
       this._shopinglist = arrs;
+      // message.success('移出成功');
       this.cacheJoinOrDeleShopingCar(this._shopinglist);
     }
   };
@@ -238,16 +222,15 @@ class MarketModel extends Emitter{
     data.forEach((item: any) => {
       this._shopingIds.push(item?.id);
     });
-    const res = await this._curMarket?.createOrder(
-      '',
-      'order',
-      'code',
-      userCtrl.Space?.target?.id,
-      this._shopingIds,
-    );
-    if (res?.code === 400) {
-      // message.warning(res.msg);
-    } else if (res?.code === 200 && res?.success) {
+    if (
+      await this._curMarket?.createOrder(
+        '',
+        'order',
+        'code',
+        userCtrl.space.id,
+        this._shopingIds,
+      )
+    ) {
       let arrs = this._shopinglist.filter(
         (item) => !data.some((ele: any) => ele.id === item.id),
       );
@@ -291,6 +274,10 @@ class MarketModel extends Emitter{
       },
       'user',
     );
+  };
+
+  public createMarket(data: XMarket):IMarket{
+    return new Market(data);
   };
 }
 export default new MarketModel();

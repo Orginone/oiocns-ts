@@ -29,55 +29,50 @@ export default class FlowTarget extends BaseTarget {
     return this.defineRelations;
   }
   async publishDefine(
-    data: Omit<model.CreateDefineReq, 'BelongId'>,
-  ): Promise<ResultType<schema.XFlowDefine>> {
-    const res = await kernel.publishDefine({ ...data, BelongId: this.target.id });
+    data: Omit<model.CreateDefineReq, 'belongId'>,
+  ): Promise<schema.XFlowDefine> {
+    const res = await kernel.publishDefine({ ...data, belongId: this.target.id });
     if (res.success) {
-      console.log('res', res);
-      if (res.data.id) {
+      if (data.id) {
         this.defines = this.defines.filter((a) => {
-          return a.id != res.data?.id;
+          return a.id != data.id;
         });
       }
       this.defines.push(res.data);
     }
-    return res;
+    return res.data;
   }
-  async deleteDefine(id: string): Promise<ResultType<boolean>> {
+  async deleteDefine(id: string): Promise<boolean> {
     const res = await kernel.deleteDefine({ id });
     if (res.success) {
       this.defines = this.defines.filter((a) => {
         return a.id != id;
       });
     }
-    return res;
+    return res.success;
   }
-  async createInstance(
-    data: model.FlowInstanceModel,
-  ): Promise<ResultType<schema.XFlowInstance>> {
-    return await kernel.createInstance(data);
+  async createInstance(data: model.FlowInstanceModel): Promise<schema.XFlowInstance> {
+    return (await kernel.createInstance(data)).data;
   }
   async bindingFlowRelation(
     data: model.FlowRelationModel,
-  ): Promise<ResultType<schema.XFlowRelation>> {
+  ): Promise<schema.XFlowRelation> {
     const res = await kernel.createFlowRelation(data);
     if (res.success) {
-      this.defineRelations = this.defineRelations.filter((a) => {
-        a.productId != data.productId || a.functionCode != data.functionCode;
-      });
+      this.defineRelations = this.defineRelations.filter(
+        (a) => a.productId != data.productId || a.functionCode != data.functionCode,
+      );
       this.defineRelations.push(res.data);
     }
-    return res;
+    return res.data;
   }
-  async unbindingFlowRelation(
-    data: model.FlowRelationModel,
-  ): Promise<ResultType<boolean>> {
+  async unbindingFlowRelation(data: model.FlowRelationModel): Promise<boolean> {
     const res = await kernel.deleteFlowRelation(data);
     if (res.success) {
-      this.defineRelations = this.defineRelations.filter((a) => {
-        a.productId != data.productId || a.functionCode != data.functionCode;
-      });
+      this.defineRelations = this.defineRelations.filter(
+        (a) => a.productId != data.productId || a.functionCode != data.functionCode,
+      );
     }
-    return res;
+    return res.success;
   }
 }

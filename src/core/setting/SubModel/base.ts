@@ -4,13 +4,16 @@ import { kernel, model, common, schema } from '../../../base';
 import Authority from '../../personal/SubModel/authority';
 import { IAuthority } from '../../../types/personal/iauthority';
 import { IIdentity } from '../../../types/personal/iidentity';
-import { ITarget } from '../../../types/setting/itarget';
+import { ITarget,TargetParam } from '../../../types/setting/itarget';
 import Identity from '../../personal/SubModel/identity';
+import { logger, sleep } from '../../../base/common';
+import { XTarget, XTargetArray } from '../../../base/schema';
+import { FileItemShare, TargetModel } from '../../../base/model';
 
 export default class BaseTarget implements ITarget {
-  public target: schema.XTarget;
-  public subTypes: TargetType[];
-  public pullTypes: TargetType[];
+  public subTeamTypes: TargetType[] = [];
+  protected memberTypes: TargetType[] = [TargetType.Person];
+  public readonly target: schema.XTarget;
   public authorityTree: Authority | undefined;
   public ownIdentitys: schema.XIdentity[];
   public identitys: IIdentity[];
@@ -18,18 +21,92 @@ export default class BaseTarget implements ITarget {
   public createTargetType: TargetType[];
   public joinTargetType: TargetType[];
   public searchTargetType: TargetType[];
-  public companyTypes: TargetType[];
+
+  public get id(): string {
+    return this.target.id;
+  }
+  public get name(): string {
+    return this.target.name;
+  }
+  public get teamName(): string {
+    return this.target.team!.name;
+  }
+
+  public get subTeam(): ITarget[] {
+    return [];
+  }
+
+  public get avatar(): FileItemShare | undefined {
+    if (this.target.avatar) {
+      return JSON.parse(this.target.avatar);
+    }
+    return undefined;
+  }
 
   constructor(target: schema.XTarget) {
     this.target = target;
-    this.subTypes = [];
-    this.pullTypes = [];
     this.createTargetType = [];
     this.joinTargetType = [];
     this.searchTargetType = [];
     this.ownIdentitys = [];
     this.identitys = [];
-    this.companyTypes = [...companyTypes];
+  }
+  async loadMembers(page: model.PageRequest): Promise<XTargetArray> {
+    const res = await kernel.querySubTargetById({
+      page: page,
+      id: this.target.id,
+      typeNames: [this.target.typeName],
+      subTypeNames: this.memberTypes,
+    });
+    return res.data;
+  }
+  async pullMember(target: XTarget): Promise<boolean> {
+    return this.pullMembers([target.id], target.typeName);
+  }
+  async pullMembers(ids: string[], type: TargetType | string): Promise<boolean> {
+    const targetType: TargetType = type as TargetType;
+    if (this.memberTypes.includes(targetType)) {
+      const res = await kernel.pullAnyToTeam({
+        id: this.target.id,
+        targetIds: ids,
+        targetType: targetType,
+        teamTypes: [this.target.typeName],
+      });
+      return res.success;
+    }
+    return false;
+  }
+  async removeMember(target: XTarget): Promise<boolean> {
+    return this.removeMembers([target.id], target.typeName);
+  }
+  async removeMembers(ids: string[], type: TargetType | string): Promise<boolean> {
+    const targetType: TargetType = type as TargetType;
+    if (this.memberTypes.includes(targetType)) {
+      const res = await kernel.removeAnyOfTeam({
+        id: this.target.id,
+        targetIds: ids,
+        targetType: targetType,
+        teamTypes: [this.target.typeName],
+      });
+      return res.success;
+    }
+    return false;
+  }
+  async loadSubTeam(_: boolean): Promise<ITarget[]> {
+    await sleep(0);
+    return [];
+  }
+  public async pullSubTeam(team: XTarget): Promise<boolean> {
+    if (this.subTeamTypes.includes(team.typeName as TargetType)) {
+      const res = await kernel.pullAnyToTeam({
+        id: this.target.id,
+        targetIds: [team.id],
+        targetType: team.typeName,
+        teamTypes: [this.target.typeName],
+      });
+      return res.success;
+    }
+    return false;
   }
   async createIdentity(
     params: Omit<model.IdentityModel, 'id' | 'belongId'>,
@@ -87,7 +164,7 @@ export default class BaseTarget implements ITarget {
   protected async createSubTarget(
     data: Omit<model.TargetModel, 'id'>,
   ): Promise<model.ResultType<schema.XTarget>> {
-    if (this.subTypes.includes(<TargetType>data.typeName)) {
+    if (this.subTeamTypes.includes(<TargetType>data.typeName)) {
       const res = await this.createTarget(data);
       if (res.success) {
         await kernel.pullAnyToTeam({
@@ -114,39 +191,12 @@ export default class BaseTarget implements ITarget {
     });
   }
 
-  public async pullMember(
-    targets: schema.XTarget[],
-  ): Promise<model.ResultType<schema.XRelationArray>> {
-    targets = targets.filter((a) => {
-      return this.pullTypes.includes(<TargetType>a.typeName);
+  protected async deleteTarget(): Promise<model.ResultType<any>> {
+    return await kernel.deleteTarget({
+      id: this.id,
+      typeName: this.target.typeName,
+      belongId: this.target.belongId,
     });
-    if (targets.length > 0) {
-      const res = await kernel.pullAnyToTeam({
-        id: this.target.id,
-        teamTypes: [this.target.typeName],
-        targetIds: targets.map((a) => {
-          return a.id;
-        }),
-        targetType: <TargetType>targets[0].typeName,
-      });
-      return res;
-    }
-    return model.badRequest(consts.UnauthorizedError);
-  }
-
-  protected async removeMember(
-    ids: string[],
-    typeName: TargetType,
-  ): Promise<model.ResultType<any>> {
-    if (this.pullTypes.includes(typeName)) {
-      return await kernel.removeAnyOfTeam({
-        id: this.target.id,
-        teamTypes: [this.target.typeName],
-        targetIds: ids,
-        targetType: typeName,
-      });
-    }
-    return model.badRequest(consts.UnauthorizedError);
   }
 
   /**
@@ -155,15 +205,15 @@ export default class BaseTarget implements ITarget {
    * @param TypeName 类型
    * @returns
    */
-  public async searchTargetByName(
+  protected async searchTargetByName(
     code: string,
     typeNames: TargetType[],
-  ): Promise<model.ResultType<schema.XTargetArray>> {
+  ): Promise<schema.XTargetArray> {
     typeNames = this.searchTargetType.filter((a) => {
       return typeNames.includes(a);
     });
     if (typeNames.length > 0) {
-      return await kernel.searchTargetByName({
+      const res = await kernel.searchTargetByName({
         name: code,
         typeNames: typeNames,
         page: {
@@ -172,8 +222,10 @@ export default class BaseTarget implements ITarget {
           limit: common.Constants.MAX_UINT_16,
         },
       });
+      return res.data;
     }
-    return model.badRequest(consts.UnauthorizedError);
+    // logger.warn(consts.UnauthorizedError);
+    return { total: 0, offset: 0, limit: 0, result: undefined };
   }
 
   /**
@@ -182,19 +234,18 @@ export default class BaseTarget implements ITarget {
    * @param typeName 对象
    * @returns
    */
-  public async applyJoin(
-    destId: string,
-    typeName: TargetType,
-  ): Promise<model.ResultType<any>> {
+  public async applyJoin(destId: string, typeName: TargetType): Promise<boolean> {
     if (this.joinTargetType.includes(typeName)) {
-      return await kernel.applyJoinTeam({
+      const res = await kernel.applyJoinTeam({
         id: destId,
         targetId: this.target.id,
         teamType: typeName,
         targetType: this.target.typeName,
       });
+      return res.success;
     }
-    return model.badRequest(consts.UnauthorizedError);
+    logger.warn(consts.UnauthorizedError);
+    return false;
   }
 
   /**
@@ -227,25 +278,26 @@ export default class BaseTarget implements ITarget {
   }
   protected async getjoinedTargets(
     typeNames: TargetType[],
-    spaceId: string = '0',
-  ): Promise<model.ResultType<schema.XTargetArray>> {
+    spaceId: string,
+  ): Promise<schema.XTargetArray | undefined> {
     typeNames = typeNames.filter((a) => {
       return this.joinTargetType.includes(a);
     });
     if (typeNames.length > 0) {
-      return await kernel.queryJoinedTargetById({
-        id: this.target.id,
-        typeName: this.target.typeName,
-        page: {
-          offset: 0,
-          filter: '',
-          limit: common.Constants.MAX_UINT_16,
-        },
-        spaceId: spaceId,
-        JoinTypeNames: typeNames,
-      });
+      return (
+        await kernel.queryJoinedTargetById({
+          id: this.target.id,
+          typeName: this.target.typeName,
+          page: {
+            offset: 0,
+            filter: '',
+            limit: common.Constants.MAX_UINT_16,
+          },
+          spaceId: spaceId,
+          JoinTypeNames: typeNames,
+        })
+      ).data;
     }
-    return model.badRequest(consts.UnauthorizedError);
   }
 
   /**
@@ -297,6 +349,7 @@ export default class BaseTarget implements ITarget {
   protected async createTarget(
     data: Omit<model.TargetModel, 'id'>,
   ): Promise<model.ResultType<schema.XTarget>> {
+    console.log('进入数据', data);
     if (this.createTargetType.includes(<TargetType>data.typeName)) {
       return await kernel.createTarget({
         ...data,
@@ -305,6 +358,20 @@ export default class BaseTarget implements ITarget {
     } else {
       return model.badRequest(consts.UnauthorizedError);
     }
+  }
+
+  async create(data: TargetModel): Promise<ITarget | undefined> {
+    await sleep(0);
+    return;
+  }
+
+  async update(data: TargetParam): Promise<ITarget> {
+    await this.updateTarget({
+      ...data,
+      belongId: this.target.belongId,
+      typeName: this.target.typeName,
+    });
+    return this;
   }
 
   /**
@@ -317,9 +384,7 @@ export default class BaseTarget implements ITarget {
    * @param teamRemark team备注
    * @returns
    */
-  protected async updateTarget(
-    data: Omit<model.TargetModel, 'id'>,
-  ): Promise<model.ResultType<schema.XTarget>> {
+  protected async updateTarget(data: Omit<model.TargetModel, 'id'>): Promise<boolean> {
     data.teamCode = data.teamCode == '' ? data.code : data.teamCode;
     data.teamName = data.teamName == '' ? data.name : data.teamName;
     let res = await kernel.updateTarget({
@@ -330,6 +395,7 @@ export default class BaseTarget implements ITarget {
     if (res.success) {
       this.target.name = data.name;
       this.target.code = data.code;
+      this.target.avatar = data.avatar;
       this.target.belongId = data.belongId;
       if (this.target.team != undefined) {
         this.target.team.name = data.teamName;
@@ -337,7 +403,7 @@ export default class BaseTarget implements ITarget {
         this.target.team.remark = data.teamRemark;
       }
     }
-    return res;
+    return res.success;
   }
 
   /**

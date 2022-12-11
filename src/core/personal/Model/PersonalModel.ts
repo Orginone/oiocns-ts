@@ -5,7 +5,7 @@ import {
   IPerson,
   ICompany,
   ISpace,
-  ICohort,
+  ITarget
 } from '../../../types/setting/itarget';
 import Person from '../SubModel/person'
 
@@ -28,21 +28,21 @@ class PersonalModel extends Emitter {
         );
         if (this._curSpace) {
           this.changCallbackPart(DomainTypes.Company);
-          // emitter.changCallbackPart(DomainTypes.Company);
+          super.changCallbackPart(DomainTypes.Company);
         }
       }, 10);
     }
   }
   /** 是否已登录 */
-  get Logined(): boolean {
+  get logined(): boolean {
     return !!this._user?.target.id;
   }
   /** 是否为单位空间 */
-  get IsCompanySpace(): boolean {
+  get isCompanySpace(): boolean {
     return this._curSpace != undefined;
   }
   /** 当前用户 */
-  get User(): IPerson {
+  get user(): IPerson {
     if (this._user) {
       return this._user;
     } else {
@@ -50,7 +50,7 @@ class PersonalModel extends Emitter {
     }
   }
   /** 当前单位空间 */
-  get Company(): ICompany {
+  get company(): ICompany {
     if (this._curSpace) {
       return this._curSpace;
     } else {
@@ -58,7 +58,7 @@ class PersonalModel extends Emitter {
     }
   }
   /** 当前空间对象 */
-  get Space(): ISpace {
+  get space(): ISpace {
     if (this._curSpace) {
       return this._curSpace;
     }
@@ -76,18 +76,38 @@ class PersonalModel extends Emitter {
       }
     }
     this.changCallbackPart(DomainTypes.Company);
-    // emitter.changCallbackPart(DomainTypes.Company);
+    super.changCallbackPart(DomainTypes.Company);
   }
-  /**
-   * 获取我的群组
-   * @returns 群组数据
-   */
-  public async getCohortList(): Promise<ICohort[]> {
+  /** 组织树 */
+  public async getTeamTree(isShare: boolean = true): Promise<ITarget[]> {
+    const result: any[] = [];
     if (this._curSpace) {
-      return await this._curSpace.getJoinedCohorts(false);
+      result.push(this.space);
+      if (isShare) {
+        const groups = await this._curSpace.getJoinedGroups(false);
+        result.push(...groups);
+      }
     } else {
-      return await this._user!.getJoinedCohorts(false);
+      result.push(this.user);
+      const cohorts = await this._user!.getCohorts(false);
+      result.push(...cohorts);
     }
+    return result;
+  }
+  /** 加载组织树 */
+  public buildTargetTree(targets: ITarget[], menus?: (item: ITarget) => any[]) {
+    const result: any[] = [];
+    for (const item of targets) {
+      result.push({
+        id: item.id,
+        item: item,
+        isLeaf: item.subTeam.length == 0,
+        menus: menus ? menus(item) : [],
+        name: item === this.user ? '我的好友' : item.name,
+        children: this.buildTargetTree(item.subTeam, menus),
+      });
+    }
+    return result;
   }
   /**
    * 登录
@@ -141,11 +161,15 @@ class PersonalModel extends Emitter {
 
   private async _loadUser(person: schema.XTarget): Promise<void> {
     sessionStorage.setItem(sessionUserName, JSON.stringify(person));
-    this._user = new Person(person);
+    this._user = this.createPerson(person);
     this._curSpace = undefined;
     await this._user.getJoinedCompanys(false);
     this.changCallbackPart(DomainTypes.User);
-    // super.changCallbackPart(DomainTypes.User);
+    super.changCallbackPart(DomainTypes.User);
+  }
+
+  private createPerson(data:schema.XTarget){
+    return new Person(data);
   }
 
   private _findCompany(id: string): ICompany | undefined {

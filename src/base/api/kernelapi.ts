@@ -3,7 +3,7 @@ import StoreHub from './storehub';
 import * as model from '../model';
 import type * as schema from '../schema';
 import axios from 'axios';
-import { logger } from '../common'; 
+import { logger } from '../common';
 /**
  * 奥集能内核api
  */
@@ -25,7 +25,7 @@ export default class KernelApi {
   private constructor(url: string) {
     this._methods = {};
     this._anystore = AnyStore.getInstance();
-    this._storeHub = new StoreHub(url, 'txt');
+    this._storeHub = new StoreHub(url, 'json');
     this._storeHub.on('Receive', (res: model.ReceiveType) => {
       const methods = this._methods[res.target.toLowerCase()];
       if (methods) {
@@ -1063,6 +1063,20 @@ export default class KernelApi {
     return await this.request({
       module: 'target',
       action: 'QueryIdentityTargets',
+      params: params,
+    });
+  }
+  /**
+   * 根据岗位下的身份查询成员
+   * @param {model.IdArrayReq} params 请求参数
+   * @returns {model.ResultType<schema.XTargetArray>} 请求结果
+   */
+  public async QueryStationTargets(
+    params: model.IdArrayReq,
+  ): Promise<model.ResultType<schema.XTargetArray>> {
+    return await this.request({
+      module: 'target',
+      action: 'QueryStationTargets',
       params: params,
     });
   }
@@ -2284,7 +2298,15 @@ export default class KernelApi {
       data: args,
     });
     if (res.data && (res.data as model.ResultType<any>)) {
-      return res.data as model.ResultType<any>;
+      const result = res.data as model.ResultType<any>;
+      if (!result.success) {
+        if (result.code === 401) {
+          logger.unauth();
+        } else {
+          logger.warn('操作失败,' + result.msg);
+        }
+      }
+      return result;
     }
     return model.badRequest();
   }

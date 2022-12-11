@@ -56,6 +56,7 @@ class WorkModel extends Emitter{
   /** 设置选中应用待办 */
   public setCurrentAppTodo = (id: string) => {
     this._curAppTodo = this._appTodo.find((n: ITodoGroup) => n.id === id);
+    this.changCallbackPart('CurAppTodo');
   };
   /**当前好友待办数量 */
   public firendTodoCount = () => {

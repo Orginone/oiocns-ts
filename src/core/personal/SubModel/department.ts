@@ -1,9 +1,9 @@
 import { TargetModel } from '../../../base/model';
 import BaseTarget from '../../setting/SubModel/base';
-import { TargetType } from '../../enum';
+import { TargetType,subDepartmentTypes,departmentTypes } from '../../enum';
 import { schema } from '../../../base';
-import { IDepartment, IWorking } from '../../../types/setting/itarget';
-import { ResultType } from '../../../base/model';
+import { IDepartment, IWorking,ITarget,TargetParam } from '../../../types/setting/itarget';
+import { logger } from '../../../base/common';
 import Working from '../../setting/SubModel/working';
 
 /**
@@ -13,41 +13,60 @@ export default class Department extends BaseTarget implements IDepartment {
   workings: IWorking[];
   person: schema.XTarget[];
   departments: IDepartment[];
+  private _onDeleted: Function;
 
-  constructor(target: schema.XTarget) {
+  constructor(target: schema.XTarget, onDeleted: Function) {
     super(target);
     this.person = [];
     this.workings = [];
     this.departments = [];
-
-    this.pullTypes = [TargetType.Person];
-    this.subTypes = [TargetType.Department, TargetType.Working];
-    this.createTargetType = [TargetType.Department, TargetType.Working];
-  }
-
-  public async update(
-    data: Omit<TargetModel, 'id'>,
-  ): Promise<ResultType<schema.XTarget>> {
-    return await super.updateTarget(data);
-  }
-  public async getPerson(reload: boolean = false): Promise<schema.XTarget[]> {
-    if (!reload && this.person.length > 0) {
-      return this.person;
+    this._onDeleted = onDeleted;
+    //TODO 逻辑报错 2022-12-11 11：52 this.typeName==>TargetType.Person
+    if ([TargetType.Department, TargetType.College].includes(TargetType.Person)) {
+      this.subTeamTypes = [...subDepartmentTypes, TargetType.Working];
+    } else {
+      this.subTeamTypes = [TargetType.JobCohort, TargetType.Working];
     }
-    const res = await super.getSubTargets([TargetType.Person]);
-    if (res.success && res.data.result) {
-      this.person = res.data.result;
-    }
-    return this.person;
+    this.createTargetType = [...this.subTeamTypes];
   }
+  public get subTeam(): ITarget[] {
+    return [...this.departments, ...this.workings];
+  }
+  async loadSubTeam(reload?: boolean): Promise<ITarget[]> {
+    await this.getDepartments(reload);
+    await this.getWorkings(reload);
+    return [...this.departments, ...this.workings];
+  }
+
+  public async create(data: TargetModel): Promise<ITarget | undefined> {
+    switch (data.typeName as TargetType) {
+      case TargetType.Working:
+        return this.createWorking(data);
+      default:
+        return this.createDepartment(data);
+    }
+  }
+
+  async delete(): Promise<boolean> {
+    const res = await this.deleteTarget();
+    if (res.success) {
+      this._onDeleted?.apply(this, []);
+    }
+    return res.success;
+  }
+
   public async getDepartments(reload: boolean = false): Promise<IDepartment[]> {
     if (!reload && this.departments.length > 0) {
       return this.departments;
     }
-    const res = await super.getSubTargets([TargetType.Department]);
+    const res = await super.getSubTargets(departmentTypes);
     if (res.success && res.data.result) {
       this.departments = res.data.result.map((a) => {
-        return new Department(a);
+        return new Department(a, () => {
+          this.departments = this.departments.filter((i) => {
+            return i.id != a.id;
+          });
+        });
       });
     }
     return this.departments;
@@ -59,67 +78,75 @@ export default class Department extends BaseTarget implements IDepartment {
     const res = await super.getSubTargets([TargetType.Working]);
     if (res.success && res.data.result) {
       this.workings = res.data.result.map((a) => {
-        return new Working(a);
+        return new Working(a, () => {
+          this.workings = this.workings.filter((i) => {
+            return i.id != a.id;
+          });
+        });
       });
     }
     return this.workings;
   }
-  public async pullPerson(targets: schema.XTarget[]): Promise<ResultType<any>> {
-    const res = await super.pullMember(targets);
-    if (res.success) {
-      res.data.result?.forEach((a) => {
-        if (a.target != undefined) {
-          this.person.push(a.target);
-        }
-      });
-    }
-    return res;
-  }
-  public async removePerson(ids: string[]): Promise<ResultType<any>> {
-    const res = await super.removeMember(ids, TargetType.Person);
-    if (res.success) {
-      this.person = this.person.filter((a) => {
-        return !ids.includes(a.id);
-      });
-    }
-    return res;
-  }
-  public async createDepartment(
-    data: Omit<TargetModel, 'id' | 'belongId'>,
-  ): Promise<ResultType<any>> {
+
+  public async createDepartment(data: TargetParam): Promise<IDepartment | undefined> {
     data.teamCode = data.teamCode == '' ? data.code : data.teamCode;
     data.teamName = data.teamName == '' ? data.name : data.teamName;
+    if (!this.subTeamTypes.includes(data.typeName as TargetType)) {
+      logger.warn('不支持该机构');
+      return;
+    }
     const res = await super.createSubTarget({ ...data, belongId: this.target.belongId });
     if (res.success) {
-      this.departments.push(new Department(res.data));
+      const department = new Department(res.data, () => {
+        this.departments = this.departments.filter((i) => {
+          return i.id != department.id;
+        });
+      });
+      this.departments.push(department);
+      return department;
     }
-    return res;
   }
-  public async deleteDepartment(id: string, spaceId: string): Promise<ResultType<any>> {
-    const res = await super.deleteSubTarget(id, TargetType.Department, spaceId);
+
+  public async deleteDepartment(id: string): Promise<boolean> {
+    const res = await super.deleteSubTarget(
+      id,
+      TargetType.Department,
+      this.target.belongId,
+    );
     if (res.success) {
       this.departments = this.departments.filter((a) => {
         return a.target.id != id;
       });
+      return true;
     }
-    return res;
+    return false;
   }
-  public async createWorking(data: Omit<TargetModel, 'id'>): Promise<ResultType<any>> {
+
+  public async createWorking(
+    data: Omit<TargetModel, 'id'>,
+  ): Promise<IWorking | undefined> {
     data.teamCode = data.teamCode == '' ? data.code : data.teamCode;
     data.teamName = data.teamName == '' ? data.name : data.teamName;
     const res = await super.createSubTarget(data);
     if (res.success) {
-      this.workings.push(new Working(res.data));
+      const working = new Working(res.data, () => {
+        this.workings = this.workings.filter((i) => {
+          return i.id != working.id;
+        });
+      });
+      this.workings.push(working);
+      return working;
     }
-    return res;
   }
-  public async deleteWorking(id: string, spaceId: string): Promise<ResultType<any>> {
-    const res = await super.deleteSubTarget(id, TargetType.Working, spaceId);
+
+  public async deleteWorking(id: string): Promise<boolean> {
+    const res = await super.deleteSubTarget(id, TargetType.Working, this.target.belongId);
     if (res.success) {
       this.workings = this.workings.filter((a) => {
         return a.target.id != id;
       });
+      return true;
     }
-    return res;
+    return false;
   }
 }
