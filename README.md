@@ -8,7 +8,7 @@
 
 # 奥集能应用架构图  
 通用SDK组件为此工程的全局定位，在此工程中，包含所有核心数据交互请求逻辑。为后续应用的迭代提供建设思路  
-![image](https://user-images.githubusercontent.com/8328012/206221549-9bdf12a3-b56c-473f-933c-d5d30c7537f8.png)
+<img width="705" alt="image" src="https://user-images.githubusercontent.com/8328012/206955965-3cd53512-d9c1-4321-a18e-1f7a11eb27e5.png">
 
 
 
