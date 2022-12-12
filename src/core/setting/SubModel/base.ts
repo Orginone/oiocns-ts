@@ -1,6 +1,6 @@
 import consts from '../../consts';
 import { companyTypes, TargetType } from '../../enum';
-import { kernel, model, common, schema } from '../../../base';
+import { kernel, model, common, schema,parseAvatar } from '../../../base';
 import Authority from '../../personal/SubModel/authority';
 import { IAuthority } from '../../../types/personal/iauthority';
 import { IIdentity } from '../../../types/personal/iidentity';
@@ -11,6 +11,7 @@ import { XTarget, XTargetArray } from '../../../base/schema';
 import { FileItemShare, TargetModel } from '../../../base/model';
 
 export default class BaseTarget implements ITarget {
+  public typeName: TargetType;
   public subTeamTypes: TargetType[] = [];
   protected memberTypes: TargetType[] = [TargetType.Person];
   public readonly target: schema.XTarget;
@@ -37,10 +38,7 @@ export default class BaseTarget implements ITarget {
   }
 
   public get avatar(): FileItemShare | undefined {
-    if (this.target.avatar) {
-      return JSON.parse(this.target.avatar);
-    }
-    return undefined;
+    return parseAvatar(this.target.avatar);
   }
 
   constructor(target: schema.XTarget) {
@@ -50,6 +48,7 @@ export default class BaseTarget implements ITarget {
     this.searchTargetType = [];
     this.ownIdentitys = [];
     this.identitys = [];
+    this.typeName = target.typeName as TargetType;
   }
   async loadMembers(page: model.PageRequest): Promise<XTargetArray> {
     const res = await kernel.querySubTargetById({
@@ -164,7 +163,7 @@ export default class BaseTarget implements ITarget {
   protected async createSubTarget(
     data: Omit<model.TargetModel, 'id'>,
   ): Promise<model.ResultType<schema.XTarget>> {
-    if (this.subTeamTypes.includes(<TargetType>data.typeName)) {
+    if (this.createTargetType.includes(data.typeName as TargetType)) {
       const res = await this.createTarget(data);
       if (res.success) {
         await kernel.pullAnyToTeam({
@@ -224,7 +223,7 @@ export default class BaseTarget implements ITarget {
       });
       return res.data;
     }
-    // logger.warn(consts.UnauthorizedError);
+    logger.warn(consts.UnauthorizedError);
     return { total: 0, offset: 0, limit: 0, result: undefined };
   }
 

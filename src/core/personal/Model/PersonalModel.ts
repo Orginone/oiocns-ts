@@ -8,6 +8,7 @@ import {
   ITarget
 } from '../../../types/setting/itarget';
 import Person from '../SubModel/person'
+import { FileItemShare, RegisterType } from '../../../base/model';
 
 const sessionUserName = 'sessionUser';
 const sessionSpaceName = 'sessionSpace';
@@ -110,6 +111,23 @@ class PersonalModel extends Emitter {
     return result;
   }
   /**
+   * 查询组织信息
+   * @param id 组织id
+   */
+  public async findTeamInfoById(id: string): Promise<FileItemShare | undefined> {
+    const teams = await this.getTeamTree();
+    for (const item of teams) {
+      if (item.id === id) {
+        if (item.avatar) {
+          return { ...item.avatar, name: item.name };
+        } else {
+          return { name: item.name } as FileItemShare;
+        }
+      }
+    }
+    return undefined;
+  }
+  /**
    * 登录
    * @param account 账户
    * @param password 密码
@@ -123,22 +141,10 @@ class PersonalModel extends Emitter {
   }
   /**
    * 注册用户
-   * @param name 姓名
-   * @param motto 座右铭
-   * @param phone 电话
-   * @param account 账户
-   * @param password 密码
-   * @param nickName 昵称
+   * @param {RegisterType} params 参数
    */
-  public async register(
-    name: string,
-    motto: string,
-    phone: string,
-    account: string,
-    password: string,
-    nickName: string,
-  ): Promise<model.ResultType<any>> {
-    let res = await kernel.register(name, motto, phone, account, password, nickName);
+  public async register(params: RegisterType): Promise<model.ResultType<any>> {
+    let res = await kernel.register(params);
     if (res.success) {
       await this._loadUser(res.data.person);
     }
@@ -168,10 +174,6 @@ class PersonalModel extends Emitter {
     super.changCallbackPart(DomainTypes.User);
   }
 
-  private createPerson(data:schema.XTarget){
-    return new Person(data);
-  }
-
   private _findCompany(id: string): ICompany | undefined {
     if (this._user && id.length > 0) {
       for (const item of this._user.joinedCompany) {
@@ -180,6 +182,9 @@ class PersonalModel extends Emitter {
         }
       }
     }
+  }
+  private createPerson(data:schema.XTarget){
+    return new Person(data);
   }
 }
 

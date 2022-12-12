@@ -6,6 +6,8 @@ import { IMTarget } from '../../../types/setting/itarget';
 import IMarket from '../../../types/market/imarket';
 import FlowTarget from './flow';
 import IProduct from '../../../types/market/iproduct';
+import { XOrder } from '../../../base/schema';
+
 
 export default class MarketTarget extends FlowTarget implements IMTarget {
   joinedMarkets: Market[];
@@ -288,5 +290,23 @@ export default class MarketTarget extends FlowTarget implements IMTarget {
       this.usefulResource[id] = res.data.result;
     }
     return this.usefulResource[id];
+  }
+  public async createOrder(
+    nftId: string,
+    name: string,
+    code: string,
+    spaceId: string,
+    merchandiseIds: string[],
+  ): Promise<XOrder> {
+    return (
+      await kernel.createOrder({
+        id: '0',
+        nftId,
+        name,
+        code,
+        belongId: spaceId,
+        merchandiseIds,
+      })
+    ).data;
   }
 }

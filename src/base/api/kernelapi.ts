@@ -133,27 +133,12 @@ export default class KernelApi {
    * @param nickName 昵称
    * @returns {Promise<model.ResultType<any>>} 异步注册结果
    */
-  public async register(
-    name: string,
-    motto: string,
-    phone: string,
-    account: string,
-    password: string,
-    nickName: string,
-  ): Promise<model.ResultType<any>> {
+  public async register(params: model.RegisterType): Promise<model.ResultType<any>> {
     var res: model.ResultType<any>;
-    var req = {
-      name,
-      motto,
-      phone,
-      account,
-      password,
-      nickName,
-    };
     if (this._storeHub.isConnected) {
-      res = await this._storeHub.invoke('Register', req);
+      res = await this._storeHub.invoke('Register', params);
     } else {
-      res = await this._restRequest('Register', req);
+      res = await this._restRequest('Register', params);
     }
     if (res.success) {
       this._anystore.updateToken(res.data.accessToken);
@@ -264,6 +249,7 @@ export default class KernelApi {
   public async createAttribute(
     params: model.AttributeModel,
   ): Promise<model.ResultType<schema.XAttribute>> {
+    console.log(params);
     return await this.request({
       module: 'thing',
       action: 'CreateAttribute',
@@ -424,25 +410,31 @@ export default class KernelApi {
   }
   /**
    * 查询分类树
-   * @param {model.IDBelongReq} params 请求参数
+   * @param {string} targetId 组织ID
    * @returns {model.ResultType<schema.XSpecies>} 请求结果
    */
   public async querySpeciesTree(
-    params: model.IDBelongReq,
+    targetId: string,
+    filter: string,
   ): Promise<model.ResultType<schema.XSpecies>> {
     return await this.request({
       module: 'thing',
       action: 'QuerySpeciesTree',
-      params: params,
+      params: {
+        id: targetId,
+        page: {
+          filter: filter,
+        },
+      },
     });
   }
   /**
    * 查询分类的度量标准
-   * @param {model.IDBelongReq} params 请求参数
+   * @param {model.IdSpaceReq} params 请求参数
    * @returns {model.ResultType<schema.XAttributeArray>} 请求结果
    */
   public async querySpeciesAttrs(
-    params: model.IDBelongReq,
+    params: model.IdSpaceReq,
   ): Promise<model.ResultType<schema.XAttributeArray>> {
     return await this.request({
       module: 'thing',
@@ -745,6 +737,20 @@ export default class KernelApi {
     });
   }
   /**
+   * 拉身份加入组织
+   * @param {model.TeamPullModel} params 请求参数
+   * @returns {model.ResultType<boolean>} 请求结果
+   */
+  public async PullIdentityToTeam(
+    params: model.TeamPullModel,
+  ): Promise<model.ResultType<boolean>> {
+    return await this.request({
+      module: 'target',
+      action: 'PullIdentityToTeam',
+      params: params,
+    });
+  }
+  /**
    * 取消申请加入组织/个人
    * @param {model.IdReqModel} params 请求参数
    * @returns {model.ResultType<boolean>} 请求结果
@@ -769,6 +775,20 @@ export default class KernelApi {
     return await this.request({
       module: 'target',
       action: 'RemoveAnyOfTeam',
+      params: params,
+    });
+  }
+  /**
+   * 从组织身份集中剔除身份
+   * @param {model.GiveIdentityModel} params 请求参数
+   * @returns {model.ResultType<boolean>} 请求结果
+   */
+  public async removeTeamIdentity(
+    params: model.GiveIdentityModel,
+  ): Promise<model.ResultType<boolean>> {
+    return await this.request({
+      module: 'target',
+      action: 'RemoveTeamIdentity',
       params: params,
     });
   }
@@ -1039,6 +1059,20 @@ export default class KernelApi {
     });
   }
   /**
+   * 查询组织容器下的身份集
+   * @param {model.IDBelongReq} params 请求参数
+   * @returns {model.ResultType<schema.XIdentityArray>} 请求结果
+   */
+  public async queryTeamIdentitys(
+    params: model.IDBelongReq,
+  ): Promise<model.ResultType<schema.XIdentityArray>> {
+    return await this.request({
+      module: 'target',
+      action: 'QueryTeamIdentitys',
+      params: params,
+    });
+  }
+  /**
    * 查询职权身份
    * @param {model.IDBelongReq} params 请求参数
    * @returns {model.ResultType<schema.XIdentityArray>} 请求结果
@@ -1063,20 +1097,6 @@ export default class KernelApi {
     return await this.request({
       module: 'target',
       action: 'QueryIdentityTargets',
-      params: params,
-    });
-  }
-  /**
-   * 根据岗位下的身份查询成员
-   * @param {model.IdArrayReq} params 请求参数
-   * @returns {model.ResultType<schema.XTargetArray>} 请求结果
-   */
-  public async QueryStationTargets(
-    params: model.IdArrayReq,
-  ): Promise<model.ResultType<schema.XTargetArray>> {
-    return await this.request({
-      module: 'target',
-      action: 'QueryStationTargets',
       params: params,
     });
   }
@@ -1184,12 +1204,14 @@ export default class KernelApi {
    * @returns {model.ResultType<model.NameModel>} 请求结果
    */
   public async queryNameBySnowId(
-    params: model.IdReq,
+    snowId: string,
   ): Promise<model.ResultType<model.NameModel>> {
     return await this.request({
       module: 'chat',
       action: 'QueryNameBySnowId',
-      params: params,
+      params: {
+        id: snowId,
+      },
     });
   }
   /**

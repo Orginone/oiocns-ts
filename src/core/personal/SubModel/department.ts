@@ -21,11 +21,13 @@ export default class Department extends BaseTarget implements IDepartment {
     this.workings = [];
     this.departments = [];
     this._onDeleted = onDeleted;
-    //TODO 逻辑报错 2022-12-11 11：52 this.typeName==>TargetType.Person
-    if ([TargetType.Department, TargetType.College].includes(TargetType.Person)) {
+    if ([TargetType.Department, TargetType.College].includes(this.typeName)) {
       this.subTeamTypes = [...subDepartmentTypes, TargetType.Working];
     } else {
       this.subTeamTypes = [TargetType.JobCohort, TargetType.Working];
+    }
+    if (this.typeName === TargetType.College) {
+      this.subTeamTypes.unshift(TargetType.Major);
     }
     this.createTargetType = [...this.subTeamTypes];
   }
