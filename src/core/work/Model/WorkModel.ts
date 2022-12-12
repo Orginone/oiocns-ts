@@ -27,24 +27,28 @@ class WorkModel extends Emitter{
   async init() {
     this._initState = new Promise((s, e) => {
       this.subscribePart(DomainTypes.User, async () => {
-        [
-          this._orgTodo, 
-          this._appTodo,
-          this._pubTodo,
-          this._orderTodo,
-          this._marketTodo
-        ] = await Promise.all([
-          loadOrgTodo(),
-          loadAppTodo(),
-          loadPublishTodo(),
-          loadOrderTodo(),
-          loadMarketTodo()
-        ])
-        if (this._initState) {
-          this._initState = undefined;
-          s();
+        try {
+          [
+            this._orgTodo, 
+            this._appTodo,
+            this._pubTodo,
+            this._orderTodo,
+            this._marketTodo
+          ] = await Promise.all([
+            loadOrgTodo(),
+            loadAppTodo(),
+            loadPublishTodo(),
+            loadOrderTodo(),
+            loadMarketTodo()
+          ])
+          if (this._initState) {
+            this._initState = undefined;
+            s();
+          }
+          this.changCallback();          
+        } catch (error) {
+          e(error);
         }
-        this.changCallback();
       });      
     })
   }
