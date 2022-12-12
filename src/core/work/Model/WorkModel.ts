@@ -6,6 +6,8 @@ import {  loadAppTodo,
 import { Emitter } from '../../../base/common';
 import { DomainTypes } from '../../enum';
 
+export const WORK_INIT = "__work_init__";
+
 /**
  * 办事类统一模型
  */
@@ -18,39 +20,69 @@ class WorkModel extends Emitter{
   private _curAppTodo: ITodoGroup | undefined;
   constructor() {
     super();
-    super.subscribePart(DomainTypes.User, () => {
-      setTimeout(async () => {
-        this._orgTodo = await loadOrgTodo();
-        this._appTodo = await loadAppTodo();
-        this._pubTodo = await loadPublishTodo();
-        this._orderTodo = await loadOrderTodo();
-        this._marketTodo = await loadMarketTodo();
-        this.changCallback();
-      }, 800);
-    });
+    this.init();
   }
+
+  private _initState: Promise<void> | undefined;
+  async init() {
+    this._initState = new Promise((s, e) => {
+      this.subscribePart(DomainTypes.User, async () => {
+        [
+          this._orgTodo, 
+          this._appTodo,
+          this._pubTodo,
+          this._orderTodo,
+          this._marketTodo
+        ] = await Promise.all([
+          loadOrgTodo(),
+          loadAppTodo(),
+          loadPublishTodo(),
+          loadOrderTodo(),
+          loadMarketTodo()
+        ])
+        if (this._initState) {
+          this._initState = undefined;
+          s();
+        }
+        this.changCallback();
+      });      
+    })
+  }
+
+  /**
+   * 等待相关的订阅均初始化
+   */
+  async waitUntilInitialized() {
+    if (!this._initState) {
+      return;
+    }
+    await this._initState;
+  }
+  
+  // 以下类型实际上均可能为undefined
+
   /** 组织单位审批 */
-  public get OrgTodo(): ITodoGroup {
-    return this._orgTodo!;
+  public get OrgTodo() {
+    return this._orgTodo;
   }
   /** 第三方应用审批 */
-  public get AppTodo(): ITodoGroup[] {
-    return this._appTodo!;
+  public get AppTodo() {
+    return this._appTodo;
   }
   /** 市场审批 */
-  public get MarketTodo(): ITodoGroup {
-    return this._marketTodo!;
+  public get MarketTodo() {
+    return this._marketTodo;
   }
   /** 订单审批 */
-  public get OrderTodo(): ITodoGroup {
-    return this._orderTodo!;
+  public get OrderTodo() {
+    return this._orderTodo;
   }
   /** 应用上架审批 */
-  public get PublishTodo(): ITodoGroup {
-    return this._pubTodo!;
+  public get PublishTodo() {
+    return this._pubTodo;
   }
   /** 当前选中的应用待办 */
-  public get CurAppTodo(): ITodoGroup | undefined {
+  public get CurAppTodo() {
     return this._curAppTodo;
   }
   /** 设置选中应用待办 */
