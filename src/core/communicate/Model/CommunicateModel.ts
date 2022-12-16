@@ -5,6 +5,7 @@ import { LoadChats } from '../SubModel';
 import userCtrl from '../../personal/Model/PersonalModel';
 import { DomainTypes, TargetType } from '../../enum';
 import { Emitter } from '../../../base/common';
+import { SubscribeKeys } from '../SubscribeKeys';
 /**
  * 沟通统一模式
  */
@@ -198,7 +199,7 @@ class CommunicateModel extends Emitter {
           c.receiveMessage(data, !this.isCurrent(c));
           this._appendChats(c);
           this._cacheChats();
-          this.changCallback();
+          this.changCallbackPart(SubscribeKeys.receiveMessgae);
           return;
         }
       }
