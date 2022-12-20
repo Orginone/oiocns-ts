@@ -23,19 +23,6 @@ export class Emitter {
   }
 
   /**
-   * 以异步的方式订阅一次性变更
-   */
-  public subscribeOnceAsync() {
-    return new Promise<string>((s, e)=> {
-      let id = "";
-      id = this.subscribe(key => {
-        this.unsubscribe(id);
-        s(key);
-      });
-    });
-  }
-
-  /**
    * @desc 订阅局部变更
    * @param callback 变更回调
    * @returns 订阅ID
@@ -54,19 +41,6 @@ export class Emitter {
       }
     }
     return key;
-  }
-
-  /**
-   * 以异步的方式订阅一次性局部变更
-   */
-  public subscribePartOnceAsync(p: string | string[]) {
-    return new Promise<string>((s, e)=> {
-      let id = "";
-      id = this.subscribePart(p, key => {
-        this.unsubscribe(id);
-        s(key);
-      });
-    });
   }
 
   /**
@@ -105,6 +79,33 @@ export class Emitter {
       if (callback) {
         callback.apply(this, [generateUuid()]);
       }
+    });
+  }
+
+  /**
+   * 以异步的方式订阅一次性变更
+   */
+  public subscribeOnceAsync() {
+    return new Promise<string>((s, e)=> {
+      let id = "";
+      id = this.subscribe(key => {
+        this.unsubscribe(id);
+        s(key);
+      });
+    });
+  }
+
+
+  /**
+   * 以异步的方式订阅一次性局部变更
+   */
+  public subscribePartOnceAsync(p: string | string[]) {
+    return new Promise<string>((s, e)=> {
+      let id = "";
+      id = this.subscribePart(p, key => {
+        this.unsubscribe(id);
+        s(key);
+      });
     });
   }
 }
