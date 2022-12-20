@@ -1,11 +1,13 @@
-import CommunicateModel from "./core/communicate/index"
-import MarketModel from "./core/market/index"
-import PersonalModel from "./core/personal/index"
-import SettingModel from "./core/setting/index"
-import StoreModel from "./core/store/index"
-import WorkModel from "./core/work/index"
+import chatCtrl from "./controller/chat"
+import userCtrl from "./controller/setting/userCtrl"
+import marketCtrl from "./controller/store/marketCtrl"
+import appCtrl from "./controller/store/appCtrl"
+import docsCtrl from "./controller/store/docsCtrl"
+import selfAppCtrl from "./controller/store/selfAppCtrl"
+import thingCtrl from "./controller/thing"
+import todoCtrl from "./controller/todo/todoCtrl"
 
 /**
  * 顶层归口服务
  */
-export {WorkModel,CommunicateModel,MarketModel,PersonalModel,SettingModel,StoreModel}
+export {selfAppCtrl,docsCtrl,appCtrl,chatCtrl,marketCtrl,userCtrl,thingCtrl,todoCtrl}
