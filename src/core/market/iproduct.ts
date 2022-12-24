@@ -3,6 +3,7 @@ import IMerchandise from './imerchandise';
 import IResource from './iresource';
 
 export default interface IProduct {
+  id: string;
   /** 应用实体 */
   prod: schema.XProduct;
   /** 商品列表 */
@@ -74,6 +75,7 @@ export default interface IProduct {
     code: string,
     typeName: string,
     remark: string,
+    photo: string,
     resources: model.ResourceModel[],
   ): Promise<boolean>;
 }

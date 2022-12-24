@@ -1,173 +1,201 @@
-import { IMTarget, emitter, DomainTypes } from '../../core/index';
+import { emitter, DomainTypes, ISpace, IMarket, IProduct } from '../../core';
 import { kernel } from '../../base';
-import { myColumns, marketColumns } from './config';
-import { JOIN_SHOPING_CAR, USER_MANAGEMENT } from '../../constants/const';
-// import { message } from 'antd';
-import { Emitter } from '../../base/common';
+import {
+  JOIN_SHOPING_CAR,
+  STORE_RECENTLY_APPS,
+  STORE_USER_MENU,
+} from '@/constants/const';
+import { logger,Emitter } from '../../base/common';
 import userCtrl from '../setting/userCtrl';
+import { XMerchandise } from '../../base/schema';
 
-export enum MarketCallBackTypes {
-  'ApplyData' = 'ApplyData',
-  'MarketShop' = 'MarketShop',
-  'UserManagement' = 'UserManagement',
+export interface TreeType {
+  title: string;
+  key: string;
+  id: string;
+  type?: string;
+  items: string[];
+  children: TreeType[];
+  icon?: any;
 }
 
 class MarketController extends Emitter {
   /** 市场操作对象 */
-  private _target: IMTarget | undefined;
-  /** 判断当前所处页面类型,调用不同请求 */
-  public curPageType: 'app' | 'market' = 'market';
-  /** 商店table数据 */
-  private _marketTableList: any = {};
-  /** 搜索到的商店 */
-  public searchMarket: any;
-  /** 所有的用户 */
-  public marketMenber: any = {};
-  /** 加入购物车商品 */
-  public JoinShopingCar: any[] = [];
+  private _target: ISpace;
   /** 购物车商品列表 */
   private _shopinglist: any[] = [];
-  /** 购买商品的id合集 */
-  private _shopingIds: string[] = [];
-
-  constructor() {
-    super();
-    this.searchMarket = [];
-    emitter.subscribePart([DomainTypes.Company, DomainTypes.User], async () => {
-      this._target = userCtrl.space;
-      await this._target.getJoinMarkets();
-      /* 获取 历史缓存的 购物车商品列表 */
-      kernel.anystore.subscribed(JOIN_SHOPING_CAR, 'user', (shoplist: any) => {
-        const { data = [] } = shoplist;
-        this._shopinglist = data || [];
-        this.changCallbackPart(MarketCallBackTypes.ApplyData);
-      });
-      /* 获取 历史缓存的 商店用户管理成员 */
-      kernel.anystore.subscribed(USER_MANAGEMENT, 'uset', (managementlist: any) => {
-        const { data = [] } = managementlist;
-        this.marketMenber = data || [];
-        this.changCallbackPart(MarketCallBackTypes.UserManagement);
-      });
-      this.changCallback();
-    });
-  }
+  /** 常用应用Id集合 */
+  private _caches: string[] = [];
+  /** 自定义菜单分类 */
+  private _customMenus: TreeType[] = [];
+  /** 当前操作应用 */
+  private _currentProduct: IProduct | undefined;
+  /** 当前操作的市场 */
+  private _currentMarket: IMarket | undefined;
 
   /**
    * @description: 获取购物车商品列表的方法
    * @return {*}
    */
-  public get shopinglist(): any[] {
+  get shopinglist(): any[] {
     return this._shopinglist;
   }
 
-  /**
-   * @description: 获取市场商品列表
-   * @return {*}
-   */
-  public get marketTableList(): any {
-    return this._marketTableList;
-  }
-
   /** 市场操作对象 */
-  public get Market(): IMTarget {
-    if (this._target) {
-      return this._target;
-    } else {
-      return {} as IMTarget;
-    }
+  get target(): ISpace {
+    return this._target;
+  }
+
+  /** 当前操作应用 */
+  get curProduct(): IProduct | undefined {
+    return this._currentProduct;
+  }
+
+  /** 当前操作的市场 */
+  get curMarket(): IMarket | undefined {
+    return this._currentMarket;
+  }
+
+  get products(): IProduct[] {
+    return this._target?.ownProducts ?? [];
+  }
+
+  /** 常用应用 */
+  get alwaysUseApps(): IProduct[] {
+    const result: IProduct[] = [];
+    this._caches.forEach((a) => {
+      let prod = this._target.ownProducts.find((p) => p.id == a);
+      if (prod) {
+        result.push(prod);
+      }
+    });
+    return result;
+  }
+
+  /** 获取自定义分类 */
+  get spacies(): TreeType[] {
+    return this._customMenus;
+  }
+
+  constructor() {
+    super();
+    this._target = userCtrl.space;
+    emitter.subscribePart([DomainTypes.Company, DomainTypes.User], async () => {
+      this._target = userCtrl.space;
+      await this._target.getOwnProducts(true);
+      await this._target.getJoinMarkets();
+
+      /* 获取 历史缓存的 购物车商品列表 */
+      kernel.anystore.subscribed(JOIN_SHOPING_CAR, 'user', (shoplist: any) => {
+        const { data = [] } = shoplist;
+        this._shopinglist = data || [];
+        this.changCallbackPart(JOIN_SHOPING_CAR);
+      });
+      this.changCallback();
+    });
+
+    /** 订阅常用应用 */
+    kernel.anystore.subscribed(STORE_RECENTLY_APPS, 'user', (data: string[]) => {
+      if (data.length > 0) {
+        this._caches = data;
+      } else {
+        this._caches = [];
+      }
+      this.changCallbackPart(STORE_RECENTLY_APPS);
+    });
+
+    /* 获取 历史缓存的 自定义目录 */
+    kernel.anystore.subscribed(STORE_USER_MENU, 'user', (data: TreeType[]) => {
+      if (data.length > 0) {
+        this._customMenus = data;
+      } else {
+        this._customMenus = [];
+      }
+      this.changCallbackPart(STORE_USER_MENU);
+    });
   }
 
   /**
-   * @desc: 获取表格头部展示数据
-   * @return {*}
+   * 设置当前应用
+   * @param prod 应用
+   * @param cache 是否添加至常用应用
    */
-  public getColumns(pageKey?: string) {
-    switch (pageKey) {
-      case 'appInfo':
-      case 'myApp':
-        return myColumns;
-      case 'market':
-        return marketColumns;
-      default:
-        return [];
+  setCurProduct(prod: IProduct, cache?: boolean): void {
+    this._currentProduct = prod;
+    this.changCallbackPart('current-product');
+    if (cache) {
+      this._caches = this._caches.filter((i) => i != prod.id);
+      this._caches.unshift(prod.id);
+      this._caches = this._caches.slice(0, 7);
+      kernel.anystore.set(
+        STORE_RECENTLY_APPS,
+        {
+          operation: 'replaceAll',
+          data: this._caches,
+        },
+        'user',
+      );
     }
-    //TODO:待完善
+  }
+
+  setCurMarket(market: IMarket) {
+    this._currentMarket = market;
+    this.changCallbackPart('current-market');
+  }
+
+  /**
+   * 设置自定义目录
+   * @param message 新消息，无则为空
+   */
+  setCustomMenu(data: TreeType[]): void {
+    this._customMenus = data;
+    this.changCallbackPart(STORE_USER_MENU);
+    kernel.anystore.set(
+      STORE_USER_MENU,
+      {
+        operation: 'replaceAll',
+        data: {
+          data: this._customMenus,
+        },
+      },
+      'user',
+    );
   }
 
   /**
    * @description: 添加商品进购物车
-   * @param {any} data
+   * @param {XMerchandise} data
    * @return {*}
    */
-  public joinApply = async (data: any) => {
-    if (this._shopinglist.length === 0) {
-      this._shopinglist.push(data);
-      // message.success('已加入购物车');
-      alert('已加入购物车')
-    } else if (this._shopinglist.some((item) => item.id === data?.id)) {
-      // message.warning('您已添加该商品，请勿重复添加');
-      alert('您已添加该商品，请勿重复添加')
+  async appendStaging(data: XMerchandise) {
+    if (this._shopinglist.some((item) => item.id === data?.id)) {
+      logger.warn('您已添加该商品，请勿重复添加');
       return;
     } else {
-      this._shopinglist.push(data);
-      // message.success('已加入购物车');
-      alert('已加入购物车')
+      this._shopinglist.unshift(data);
+      logger.info('添加成功');
     }
-    this.cacheJoinOrDeleShopingCar(this._shopinglist);
-  };
+    this.updateShoppingCar(this._shopinglist);
+  }
 
   /**
    * @description: 删除购物车内的商品
    * @param {any} data
    * @return {*}
    */
-  public deleApply = async (data: any) => {
-    if (this._shopinglist.length > 0) {
-      let arrs = this._shopinglist.filter(
-        (item) => !data.some((ele: any) => ele.id === item.id),
-      );
-      this._shopinglist = arrs;
-      // message.success('移出成功');
-      alert('移出成功')
-      this.cacheJoinOrDeleShopingCar(this._shopinglist);
-    }
-  };
-
-  /**
-   * @description: 购买商品
-   * @param {any} data
-   * @return {*}
-   */
-  public buyShoping = async (data: any) => {
-    data.forEach((item: any) => {
-      this._shopingIds.push(item?.id);
-    });
-    if (
-      await this._target?.createOrder(
-        '',
-        data[0].caption + (data.length > 1 ? `...等${data.length}件商品` : ''),
-        new Date().getTime().toString().substring(0, 13),
-        userCtrl.space.id,
-        this._shopingIds,
-      )
-    ) {
-      let arrs = this._shopinglist.filter(
-        (item) => !data.some((ele: any) => ele.id === item.id),
-      );
-      this._shopinglist = arrs;
-      this.cacheJoinOrDeleShopingCar(this._shopinglist);
-      // message.success('下单成功');
-      alert('下单成功')
-    }
-  };
+  async deleteStaging(ids: string[]) {
+    this._shopinglist = this._shopinglist.filter((item) => !ids.includes(item.id));
+    logger.info('移出成功');
+    await this.updateShoppingCar(this._shopinglist);
+  }
 
   /**
    * 缓存 加入/删除购物车的商品
    * @param message 新消息，无则为空
    */
-  public cacheJoinOrDeleShopingCar = (data: any): void => {
-    this.changCallbackPart(MarketCallBackTypes.ApplyData);
-    kernel.anystore.set(
+  private async updateShoppingCar(data: any) {
+    this.changCallbackPart(JOIN_SHOPING_CAR);
+    await kernel.anystore.set(
       JOIN_SHOPING_CAR,
       {
         operation: 'replaceAll',
@@ -177,24 +205,29 @@ class MarketController extends Emitter {
       },
       'user',
     );
-  };
+  }
 
   /**
-   * 缓存 商店用户管理成员
-   * @param message 新消息，无则为空
+   * @description: 购买商品
+   * @param {any} data
+   * @return {*}
    */
-  public cacheUserManagement = (data: any): void => {
-    this.changCallbackPart(MarketCallBackTypes.UserManagement);
-    kernel.anystore.set(
-      USER_MANAGEMENT,
-      {
-        operation: 'replaceAll',
-        data: {
-          data: data || [],
-        },
-      },
-      'user',
-    );
-  };
+  async createOrder(ids: string[]) {
+    if (ids.length > 0) {
+      const firstProd = this._shopinglist.find((n) => n.id === ids[0]);
+      const success = await this._target.createOrder(
+        '',
+        firstProd.caption + (ids.length > 1 ? `...等${ids.length}件商品` : ''),
+        new Date().getTime().toString().substring(0, 13),
+        userCtrl.space.id,
+        ids,
+      );
+      if (success) {
+        this._shopinglist = this._shopinglist.filter((item) => !ids.includes(item.id));
+        this.updateShoppingCar(this._shopinglist);
+        logger.info('下单成功');
+      }
+    }
+  }
 }
 export default new MarketController();

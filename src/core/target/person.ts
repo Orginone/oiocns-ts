@@ -6,10 +6,10 @@ import MarketTarget from './mbase';
 import { companyTypes, TargetType } from '../enum';
 import University from './university';
 import { CommonStatus } from './../enum';
-import { validIsSocialCreditCode } from '../../utils/tools';
+import { validIsSocialCreditCode } from '@/utils/tools';
 import { ICompany, IPerson, ICohort, SpaceType, ITarget } from './itarget';
 import { schema, model, kernel, common } from '../../base';
-import { TargetModel } from '../../base/model';
+import { PageRequest, TargetModel } from '../../base/model';
 import { logger, sleep } from '../../base/common';
 import { IProduct } from '../market';
 
@@ -35,12 +35,14 @@ export default class Person extends MarketTarget implements IPerson {
     return {
       id: this.id,
       name: '个人空间',
-      avatar: this.avatar,
+      share: this.shareInfo,
       typeName: this.target.typeName as TargetType,
     };
   }
   public async create(data: TargetModel): Promise<ITarget | undefined> {
     switch (data.typeName as TargetType) {
+      case TargetType.University:
+      case TargetType.Hospital:
       case TargetType.Company:
         return this.createCompany(data);
       case TargetType.Cohort:
@@ -92,7 +94,7 @@ export default class Person extends MarketTarget implements IPerson {
     }
     return this.joinedCompany;
   }
-  public async createCohort(
+  private async createCohort(
     avatar: string,
     name: string,
     code: string,
@@ -115,7 +117,7 @@ export default class Person extends MarketTarget implements IPerson {
       return cohort;
     }
   }
-  public async createCompany(
+  private async createCompany(
     data: Omit<TargetModel, 'id'>,
   ): Promise<ICompany | undefined> {
     data.belongId = this.id;
@@ -233,16 +235,25 @@ export default class Person extends MarketTarget implements IPerson {
     }
     return res.success;
   }
-  public async getFriends(reload: boolean = false): Promise<schema.XTarget[]> {
-    if (!reload && this.joinedFriend.length > 0) {
-      return this.joinedFriend;
+  public async loadMembers(page: PageRequest): Promise<schema.XTargetArray> {
+    if (this.joinedFriend.length == 0) {
+      let data = await super.loadMembers({
+        offset: 0,
+        limit: common.Constants.MAX_UINT_16,
+        filter: '',
+      });
+      if (data.result) {
+        this.joinedFriend = data.result;
+      }
     }
-    const res = await this.getSubTargets([TargetType.Person]);
-    if (res.success && res.data.result) {
-      this.joinedFriend = res.data.result;
-    }
-
-    return this.joinedFriend;
+    return {
+      offset: page.offset,
+      limit: page.limit,
+      result: this.joinedFriend
+        .filter((a) => a.code.includes(page.filter) || a.name.includes(page.filter))
+        .splice(page.offset, page.limit),
+      total: this.joinedFriend.length,
+    };
   }
   public async applyFriend(target: schema.XTarget): Promise<boolean> {
     const joinedTarget = this.joinedFriend.find((a) => {
@@ -256,8 +267,8 @@ export default class Person extends MarketTarget implements IPerson {
     logger.warn(consts.IsExistError);
     return false;
   }
-  public async removeFriend(ids: string[]): Promise<boolean> {
-    if (await this.removeMembers(ids, TargetType.Person)) {
+  public async removeMembers(ids: string[]): Promise<boolean> {
+    if (await super.removeMembers(ids, TargetType.Person)) {
       ids.forEach(async (id) => {
         await kernel.exitAnyOfTeam({
           id,

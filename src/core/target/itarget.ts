@@ -1,12 +1,12 @@
 import { model, schema } from '../../base';
-import { FileItemShare, PageRequest, TargetModel } from '../../base/model';
+import { PageRequest, TargetModel, TargetShare } from '../../base/model';
 import { XIdentity, XTarget, XTargetArray } from '../../base/schema';
 import { TargetType } from '../enum';
 import { IMarket, Market } from '../market';
 import IProduct from '../market/iproduct';
 import { IAuthority } from './authority/iauthority';
 import { IIdentity } from './authority/iidentity';
-
+import { ISpeciesItem } from './species/ispecies';
 export type TargetParam = Omit<TargetModel, 'id' | 'belongId'>;
 
 /** 空间类型数据 */
@@ -18,11 +18,13 @@ export type SpaceType = {
   /** 类型 */
   typeName: TargetType;
   /** 头像 */
-  avatar?: FileItemShare;
+  share: TargetShare;
 };
 export interface ITarget {
   /** 唯一标识 */
   id: string;
+  /** 唯一标识 */
+  key: string;
   /** 名称 */
   name: string;
   /** 团队名称 */
@@ -33,6 +35,8 @@ export interface ITarget {
   typeName: TargetType;
   /** 职权树 */
   authorityTree: IAuthority | undefined;
+  /** 分类标准树 */
+  speciesTree: ISpeciesItem | undefined;
   /** 拥有的身份 */
   ownIdentitys: schema.XIdentity[];
   /** 组织的身份 */
@@ -45,8 +49,8 @@ export interface ITarget {
   searchTargetType: TargetType[];
   /** 缓存内的子组织 */
   subTeam: ITarget[];
-  /** 头像 */
-  avatar: FileItemShare | undefined;
+  /** 共享信息 */
+  shareInfo: TargetShare;
   /**
    * 新增
    * @param data
@@ -61,7 +65,12 @@ export interface ITarget {
    * 获取职权树
    * @param reload 是否强制刷新
    */
-  selectAuthorityTree(reload?: boolean): Promise<IAuthority | undefined>;
+  loadAuthorityTree(reload?: boolean): Promise<IAuthority | undefined>;
+  /**
+   * 获取分类标准树
+   * @param reload 是否强制刷新
+   */
+  loadSpeciesTree(reload?: boolean): Promise<ISpeciesItem | undefined>;
   /**
    * 判断是否拥有该身份
    * @param id 身份id
@@ -338,16 +347,6 @@ export interface ISpace extends IFlow, IMTarget, ITarget {
    */
   getCohorts(reload?: boolean): Promise<ICohort[]>;
   /**
-   * 创建群组
-   * @param data 群组基本信息
-   */
-  createCohort(
-    avatar: string,
-    name: string,
-    code: string,
-    remark: string,
-  ): Promise<ICohort | undefined>;
-  /**
    * 解散群组
    * @param id 群组id
    * @param belongId 群组归属id
@@ -389,12 +388,6 @@ export interface IPerson extends ISpace, ITarget {
    * @return 加入的单位列表
    */
   getJoinedCompanys(reload?: boolean): Promise<ICompany[]>;
-  /**
-   * 设立单位
-   * @param data 单位基本信息
-   * @returns 是否成功
-   */
-  createCompany(data: TargetParam): Promise<ICompany | undefined>;
   /**
    * 删除单位
    * @param id 单位Id
@@ -461,22 +454,6 @@ export interface ICompany extends ISpace, ITarget {
   joinedGroup: IGroup[];
   /** 当前用户Id */
   userId: string;
-  /**
-   * 创建集团
-   * @param name 集团名称
-   * @param code 集团代码
-   * @param teamName 团队名称
-   * @param teamCode 团队代码
-   * @param remark 集团简介
-   * @returns 是否成功
-   */
-  createGroup(data: TargetParam): Promise<IGroup | undefined>;
-  /** 创建部门 */
-  createDepartment(data: TargetParam): Promise<IDepartment | undefined>;
-  /** 创建岗位 */
-  createStation(data: TargetParam): Promise<IStation | undefined>;
-  /** 创建工作组 */
-  createWorking(data: TargetParam): Promise<IWorking | undefined>;
   /**
    * 删除集团
    * @param id 集团Id
