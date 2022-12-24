@@ -1,115 +1,117 @@
+import { STORE_RECENTLY_APPS, STORE_USER_MENU } from '@/constants/const';
 import { kernel } from '../../base';
 import { Emitter } from '../../base/common';
-import { DomainTypes, emitter, IMTarget, IProduct } from '../../core/index';
+import { DomainTypes, emitter, IProduct, ISpace } from '../../core';
 import userCtrl from '../setting/userCtrl';
-const AppStoreName = 'AppStore';
 
 export interface TreeType {
   title: string;
   key: string;
   id: string;
+  // type: 'app' | 'docx' | 'assets' | 'data'; //可扩展
+  type?: string;
+  items: string[];
   children: TreeType[];
-}
-
-export interface AppCache {
-  alwaysUseIds: string[];
-  species?: {
-    spaceId: string;
-    species: TreeType[];
-  };
+  icon?: any;
 }
 
 class AppController extends Emitter {
-  private _curProdId: string;
+  /** 当前操作应用 */
+  private _current: IProduct | undefined;
   /** 市场操作对象 */
-  private _target: IMTarget | undefined;
-  private _caches: AppCache;
-  constructor() {
-    super();
-    this._curProdId = '';
-    this._caches = {
-      alwaysUseIds: [],
-    };
-    emitter.subscribePart([DomainTypes.User, DomainTypes.Company], () => {
-      setTimeout(async () => {
-        await this._initialization();
-      }, 200);
-    });
-  }
+  private _target: ISpace;
+  private _caches: string[] = [];
+  private _customMenus: TreeType[] = [];
 
   get products(): IProduct[] {
     return this._target?.ownProducts ?? [];
   }
 
   get curProduct(): IProduct | undefined {
-    if (this._target) {
-      for (const item of this._target.ownProducts) {
-        if (item.prod.id === this._curProdId) {
-          return item;
-        }
-      }
-    }
-    return undefined;
+    return this._current;
   }
 
   get alwaysUseApps(): IProduct[] {
     const result: IProduct[] = [];
-    if (this._caches && this._target && this._caches.alwaysUseIds) {
-      for (const id of this._caches.alwaysUseIds) {
-        for (const item of this._target.ownProducts) {
-          if (item.prod.id === id) {
-            result.push(item);
-          }
-        }
+    this._caches.forEach((a) => {
+      let prod = this._target.ownProducts.find((p) => p.id == a);
+      if (prod) {
+        result.push(prod);
       }
-    }
+    });
     return result;
   }
 
   get spacies(): TreeType[] {
-    if (this._caches.species) {
-      // if (this._caches.species[userCtrl.space.target.id]) {
-      //   return this._caches.species[userCtrl.space.target.id];
-      // }
-    }
-    return [];
+    return this._customMenus;
   }
 
-  public setCurProduct(id?: string, cache: boolean = false): void {
-    if (!id) {
-      this._curProdId = '';
-    } else if (this._target) {
-      this._curProdId = id;
-      if (cache && this._caches) {
-        this._caches.alwaysUseIds = this._caches.alwaysUseIds.filter((i) => i != id);
-        this._caches.alwaysUseIds.unshift(id);
-        this._caches.alwaysUseIds = this._caches.alwaysUseIds.slice(0, 7);
-        this._cacheUserData();
-      }
-    }
-  }
-
-  private async _initialization() {
+  constructor() {
+    super();
     this._target = userCtrl.space;
-    await this._target.getOwnProducts(true);
-    this.changCallback();
-    kernel.anystore.subscribed(AppStoreName, 'user', (data: AppCache) => {
-      if (data.alwaysUseIds) {
-        this._caches.alwaysUseIds = data.alwaysUseIds;
-      }
-      if (data.species) {
-        this._caches.species = data.species;
-      }
+    emitter.subscribePart([DomainTypes.User, DomainTypes.Company], async () => {
+      this._target = userCtrl.space;
+      await this._target.getOwnProducts(true);
       this.changCallback();
+
+      /** 订阅常用应用 */
+      kernel.anystore.subscribed(STORE_RECENTLY_APPS, 'user', (data: string[]) => {
+        if (data.length > 0) {
+          this._caches = data;
+        } else {
+          this._caches = [];
+        }
+        this.changCallback();
+      });
+
+      /* 获取 历史缓存的 自定义目录 */
+      kernel.anystore.subscribed(STORE_USER_MENU, 'user', (data: TreeType[]) => {
+        if (data.length > 0) {
+          this._customMenus = data;
+        } else {
+          this._customMenus = [];
+        }
+        this.changCallbackPart(STORE_USER_MENU);
+      });
     });
   }
 
-  private _cacheUserData(): void {
+  /**
+   * 设置当前应用
+   * @param prod 应用
+   * @param cache 是否添加至常用应用
+   */
+  public setCurProduct(prod: IProduct, cache?: boolean): void {
+    this._current = prod;
+    if (cache) {
+      this._caches = this._caches.filter((i) => i != prod.id);
+      this._caches.unshift(prod.id);
+      this._caches = this._caches.slice(0, 7);
+      kernel.anystore.set(
+        STORE_RECENTLY_APPS,
+        {
+          operation: 'replaceAll',
+          data: this._caches,
+        },
+        'user',
+      );
+    }
+  }
+
+  /**
+   * 设置自定义目录
+   * @param message 新消息，无则为空
+   */
+  public setCustomMenu(data: TreeType[]): void {
+    this._customMenus = data;
+    this.changCallbackPart(STORE_USER_MENU);
     kernel.anystore.set(
-      AppStoreName,
+      STORE_USER_MENU,
       {
         operation: 'replaceAll',
-        data: this._caches,
+        data: {
+          data: this._customMenus,
+        },
       },
       'user',
     );

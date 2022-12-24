@@ -1,5 +1,10 @@
-import { kernel, parseAvatar, schema } from '../../base';
-import { AttributeModel, PageRequest, SpeciesModel, TargetShare } from '../../base/model';
+import { kernel, parseAvatar, schema } from '../../../base';
+import {
+  AttributeModel,
+  PageRequest,
+  SpeciesModel,
+  TargetShare,
+} from '../../../base/model';
 import { INullSpeciesItem, ISpeciesItem } from './ispecies';
 /**
  * 分类系统项实现

@@ -8,12 +8,14 @@ import {
   DomainTypes,
   emitter,
   ITarget,
+  findTargetShare,
 } from '../../core';
-import { FileItemShare, RegisterType } from '../../base/model';
+import { RegisterType, TargetShare } from '../../base/model';
 const sessionUserName = 'sessionUser';
 const sessionSpaceName = 'sessionSpace';
 /** 用户控制器 */
 class UserController extends Emitter {
+  public currentKey: string = '';
   private _user: IPerson | undefined;
   private _curSpace: ICompany | undefined;
   /**构造方法 */
@@ -67,7 +69,7 @@ class UserController extends Emitter {
   }
   /** 设置当前空间 */
   public setCurSpace(id: string) {
-    if (id === this._user!.target.id) {
+    if (id === this._user!.id) {
       this._curSpace = undefined;
       sessionStorage.setItem(sessionSpaceName, '');
     } else {
@@ -75,6 +77,9 @@ class UserController extends Emitter {
       if (this._curSpace) {
         sessionStorage.setItem(sessionSpaceName, id);
       }
+    }
+    if (this.currentKey === '') {
+      this.currentKey = this.space.key;
     }
     this.changCallbackPart(DomainTypes.Company);
     emitter.changCallbackPart(DomainTypes.Company);
@@ -114,18 +119,8 @@ class UserController extends Emitter {
    * 查询组织信息
    * @param id 组织id
    */
-  public async findTeamInfoById(id: string): Promise<FileItemShare | undefined> {
-    const teams = await this.getTeamTree();
-    for (const item of teams) {
-      if (item.id === id) {
-        if (item.avatar) {
-          return { ...item.avatar, name: item.name };
-        } else {
-          return { name: item.name } as FileItemShare;
-        }
-      }
-    }
-    return undefined;
+  public findTeamInfoById(id: string): TargetShare {
+    return findTargetShare(id);
   }
   /**
    * 登录
