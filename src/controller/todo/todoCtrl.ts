@@ -10,6 +10,8 @@ import {
 } from '../../core';
 import { Emitter } from '../../base/common';
 
+export const WORK_INIT = "__work_init__";
+
 /** 待办控制器 */
 class TodoController extends Emitter {
   private _orgTodo: ITodoGroup | undefined;
@@ -18,19 +20,54 @@ class TodoController extends Emitter {
   private _marketTodo: ITodoGroup | undefined;
   private _appTodo: ITodoGroup[] = [];
   private _curAppTodo: ITodoGroup | undefined;
+  
   constructor() {
     super();
-    emitter.subscribePart(DomainTypes.User, () => {
-      setTimeout(async () => {
-        this._orgTodo = await loadOrgTodo();
-        this._appTodo = await loadAppTodo();
-        this._pubTodo = await loadPublishTodo();
-        this._orderTodo = await loadOrderTodo();
-        this._marketTodo = await loadMarketTodo();
-        this.changCallback();
-      }, 800);
-    });
+    this.init();
   }
+
+  private _initState: Promise<void> | undefined;
+  async init() {
+    this._initState = new Promise((s, e) => {
+      this.subscribePart(DomainTypes.User, async () => {
+        try {
+          [
+            this._orgTodo, 
+            this._appTodo,
+            this._pubTodo,
+            this._orderTodo,
+            this._marketTodo
+          ] = await Promise.all([
+            loadOrgTodo(),
+            loadAppTodo(),
+            loadPublishTodo(),
+            loadOrderTodo(),
+            loadMarketTodo()
+          ])
+          if (this._initState) {
+            this._initState = undefined;
+            s();
+          }
+          this.changCallback();          
+        } catch (error) {
+          e(error);
+        }
+      });      
+    })
+  }
+
+  /**
+   * 等待相关的订阅均初始化
+   */
+  async waitUntilInitialized() {
+    if (!this._initState) {
+      return;
+    }
+    await this._initState;
+  }
+  
+  // 以下类型实际上均可能为undefined
+
   /** 组织单位审批 */
   public get OrgTodo(): ITodoGroup {
     return this._orgTodo!;

@@ -81,4 +81,31 @@ export class Emitter {
       }
     });
   }
+
+  /**
+   * 以异步的方式订阅一次性变更
+   */
+  public subscribeOnceAsync() {
+    return new Promise<string>((s, e)=> {
+      let id = "";
+      id = this.subscribe(key => {
+        this.unsubscribe(id);
+        s(key);
+      });
+    });
+  }
+
+
+  /**
+   * 以异步的方式订阅一次性局部变更
+   */
+  public subscribePartOnceAsync(p: string | string[]) {
+    return new Promise<string>((s, e)=> {
+      let id = "";
+      id = this.subscribePart(p, key => {
+        this.unsubscribe(id);
+        s(key);
+      });
+    });
+  }
 }
