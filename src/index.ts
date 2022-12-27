@@ -8,13 +8,12 @@ import thingCtrl from "./controller/thing"
 import todoCtrl from "./controller/todo/todoCtrl"
 import {logger,LoggerLevel} from "./base/common/"
 
-import { IFileSystemItem, IObjectItem} from './core/';
+import { IFileSystemItem, IObjectItem,INullSpeciesItem} from './core/';
 import { TargetType} from './core/enum';
 import { ICompany,SpaceType } from './core/target/itarget';
-
 /**
  * 顶层归口服务
 */
-export {docsCtrl,appCtrl,chatCtrl,marketCtrl,userCtrl,thingCtrl,todoCtrl,processCtrl,logger}
+export {docsCtrl,appCtrl,chatCtrl,marketCtrl,userCtrl,thingCtrl,todoCtrl,processCtrl,logger,LoggerLevel,TargetType}
 
-export type {IFileSystemItem,IObjectItem,TargetType,LoggerLevel,ICompany,SpaceType}
+export type {IFileSystemItem,IObjectItem,ICompany,SpaceType,INullSpeciesItem}
