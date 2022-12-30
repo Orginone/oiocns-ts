@@ -1,7 +1,7 @@
 import { kernel } from '../../base';
 import { XImMsg } from '../../base/schema';
 import { emitter, findTargetShare, IChat, IChatGroup, LoadChats } from '../../core';
-import userCtrl from '../setting/userCtrl';
+import userCtrl from '../setting';
 import { DomainTypes, TargetType } from '../../core/enum';
 import { Emitter } from '../../base/common';
 import { TargetShare } from '../../base/model';
