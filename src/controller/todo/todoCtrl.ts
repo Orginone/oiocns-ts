@@ -10,6 +10,7 @@ import {
 } from '../../core';
 import { Emitter } from '../../base/common';
 import userCtrl from '../setting';
+import {sum} from '../../utils/collection';
 
 /** 待办控制器 */
 class TodoController extends Emitter {
@@ -106,21 +107,23 @@ class TodoController extends Emitter {
   };
   /** 获取总的待办数量 */
   public async getTaskCount(): Promise<number> {
-    let sum = 0;
-    sum += (await this._orderTodo?.getCount()) ?? 0;
-    this.OrgTodo.forEach(async (a) => {
-      sum += (await a?.getCount()) ?? 0;
-    });
-    this.MarketTodo.filter((a) => a.id != '').forEach(async (a) => {
-      sum += (await a?.getCount()) ?? 0;
-    });
-    this.PublishTodo.filter((a) => a.id != '').forEach(async (a) => {
-      sum += (await a?.getCount()) ?? 0;
-    });
-    this._appTodo.forEach(async (item) => {
-      sum += await item.getCount();
-    });
-    return sum;
+    let count = 0;
+    count += (await this._orderTodo?.getCount()) ?? 0;
+    count += sum(await Promise.all([
+
+      // HACK: 数组的forEach传递异步方法，并不会等待其返回，
+      // 如果这样写方法将在接口发完之前就返回错误的合计数
+
+      ...this.OrgTodo.map(async a => (await a?.getCount()) ?? 0),
+      ...this.MarketTodo
+        .filter(a => !!a.id)
+        .map(async a => (await a?.getCount()) ?? 0),
+      ...this.PublishTodo
+        .filter(a => !!a.id)
+        .map(async a => (await a?.getCount()) ?? 0),
+      ...this._appTodo.map(async a => await a.getCount()),
+    ]))
+    return count;
   }
 }
 
