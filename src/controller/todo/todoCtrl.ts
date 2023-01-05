@@ -22,8 +22,13 @@ class TodoController extends Emitter {
   private _curAppTodo: ITodoGroup | undefined;
   constructor() {
     super();
-    emitter.subscribePart(DomainTypes.User, () => {
-      setTimeout(async () => {
+    this.init();
+  }
+
+  private _initState: Promise<void> | undefined;
+  async init() {
+    this._initState = new Promise((s, e) => {
+      this.subscribePart(DomainTypes.User, async () => {
         let orgTodoTypes = [
           {
             id: userCtrl.user.id,
@@ -34,15 +39,42 @@ class TodoController extends Emitter {
         orgTodoTypes.push(
           ...(await userCtrl.user.getJoinedCompanys(false)).map((a) => a.target),
         );
-        this._orgTodo = await loadOrgTodo(orgTodoTypes);
-        this._appTodo = await loadAppTodo();
-        this._pubTodo = await loadPublishTodo();
-        this._orderTodo = await loadOrderTodo();
-        this._marketTodo = await loadMarketTodo();
-        this.changCallback();
-      }, 800);
-    });
+        try {
+          [
+            this._orgTodo, 
+            this._appTodo,
+            this._pubTodo,
+            this._orderTodo,
+            this._marketTodo
+          ] = await Promise.all([
+            loadOrgTodo(orgTodoTypes),
+            loadAppTodo(),
+            loadPublishTodo(),
+            loadOrderTodo(),
+            loadMarketTodo()
+          ])
+          if (this._initState) {
+            this._initState = undefined;
+            s();
+          }
+          this.changCallback();          
+        } catch (error) {
+          e(error);
+        }
+      });      
+    })
   }
+
+  /**
+   * 等待相关的订阅均初始化
+   */
+  async waitUntilInitialized() {
+    if (!this._initState) {
+      return;
+    }
+    await this._initState;
+  }
+  
   /** 组织单位审批 */
   public get OrgTodo(): ITodoGroup[] {
     return this._orgTodo!;
