@@ -1,11 +1,20 @@
-import CommunicateModel from "./core/communicate/index"
-import MarketModel from "./core/market/index"
-import PersonalModel from "./core/personal/index"
-import SettingModel from "./core/setting/index"
-import StoreModel from "./core/store/index"
-import WorkModel from "./core/work/index"
+import chatCtrl from "./controller/chat"
+import userCtrl from "./controller/setting"
+import processCtrl from "./controller/setting/processCtrl"
+import appCtrl from "./controller/store/appCtrl"
+import docsCtrl from "./controller/store"
+import marketCtrl from "./controller/store/marketCtrl"
+import thingCtrl from "./controller/thing"
+import todoCtrl from "./controller/todo/todoCtrl"
+import portalCtrl from "./controller/store/portalCtrl"
+import {logger,LoggerLevel} from "./base/common/"
 
+import { IFileSystemItem, IObjectItem,INullSpeciesItem} from './core/';
+import { TargetType} from './core/enum';
+import { ICompany,SpaceType } from './core/target/itarget';
 /**
  * 顶层归口服务
- */
-export {WorkModel,CommunicateModel,MarketModel,PersonalModel,SettingModel,StoreModel}
+*/
+export {docsCtrl,appCtrl,chatCtrl,marketCtrl,userCtrl,thingCtrl,todoCtrl,processCtrl,portalCtrl,logger,LoggerLevel,TargetType}
+
+export type {IFileSystemItem,IObjectItem,ICompany,SpaceType,INullSpeciesItem}

@@ -4,6 +4,7 @@ import * as model from '../model';
 import type * as schema from '../schema';
 import axios from 'axios';
 import { logger } from '../common';
+import { kernel } from '..';
 /**
  * 奥集能内核api
  */
@@ -146,6 +147,23 @@ export default class KernelApi {
     return res;
   }
   /**
+   * 生成单位token
+   * @param comapnyId 单位id
+   * @returns 生成后的token
+   */
+  public async genToken(comapnyId: string): Promise<model.ResultType<string>> {
+    var res: model.ResultType<any>;
+    if (this._storeHub.isConnected) {
+      res = await this._storeHub.invoke('GenToken', comapnyId);
+    } else {
+      res = await this._restRequest('gentoken', comapnyId);
+    }
+    if (res.success) {
+      kernel._anystore.updateToken(res.data);
+    }
+    return res;
+  }
+  /**
    * 创建字典类型
    * @param {model.DictModel} params 请求参数
    * @returns {model.ResultType<schema.XDict>} 请求结果
@@ -249,7 +267,6 @@ export default class KernelApi {
   public async createAttribute(
     params: model.AttributeModel,
   ): Promise<model.ResultType<schema.XAttribute>> {
-    console.log(params);
     return await this.request({
       module: 'thing',
       action: 'CreateAttribute',
@@ -1463,6 +1480,20 @@ export default class KernelApi {
     return await this.request({
       module: 'market',
       action: 'QueryOwnMarket',
+      params: params,
+    });
+  }
+  /**
+   * 查询管理的市场
+   * @param {model.IDBelongReq} params 请求参数
+   * @returns {model.ResultType<schema.XMarketArray>} 请求结果
+   */
+  public async queryManageMarket(
+    params: model.IDBelongReq,
+  ): Promise<model.ResultType<schema.XMarketArray>> {
+    return await this.request({
+      module: 'market',
+      action: 'QueryManageMarket',
       params: params,
     });
   }
