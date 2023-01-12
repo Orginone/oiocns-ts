@@ -15,7 +15,7 @@ import {sum} from '../../utils/collection';
 /** 待办控制器 */
 class TodoController extends Emitter {
   public currentKey: string = '';
-  private _orgTodo: ITodoGroup[] = [];
+  private _orgTodo: ITodoGroup | undefined;
   private _pubTodo: ITodoGroup[] = [];
   private _orderTodo: ITodoGroup | undefined;
   private _marketTodo: ITodoGroup[] = [];
@@ -48,7 +48,7 @@ class TodoController extends Emitter {
             this._orderTodo,
             this._marketTodo
           ] = await Promise.all([
-            loadOrgTodo(orgTodoTypes),
+            loadOrgTodo(),
             loadAppTodo(),
             loadPublishTodo(),
             loadOrderTodo(),
@@ -77,7 +77,7 @@ class TodoController extends Emitter {
   }
   
   /** 组织单位审批 */
-  public get OrgTodo(): ITodoGroup[] {
+  public get OrgTodo(): ITodoGroup {
     return this._orgTodo!;
   }
   /** 第三方应用审批 */
@@ -109,12 +109,12 @@ class TodoController extends Emitter {
   public async getTaskCount(): Promise<number> {
     let count = 0;
     count += (await this._orderTodo?.getCount()) ?? 0;
+    count += (await this._orgTodo?.getCount()) ?? 0;
     count += sum(await Promise.all([
 
       // HACK: 数组的forEach传递异步方法，并不会等待其返回，
       // 如果这样写方法将在接口发完之前就返回错误的合计数
 
-      ...this.OrgTodo.map(async a => (await a?.getCount()) ?? 0),
       ...this.MarketTodo
         .filter(a => !!a.id)
         .map(async a => (await a?.getCount()) ?? 0),

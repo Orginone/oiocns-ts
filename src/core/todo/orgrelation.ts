@@ -10,20 +10,20 @@ import {
 import { model, kernel, schema } from '../../base';
 
 class OrgTodo implements ITodoGroup {
-  readonly id: string;
+  // readonly id: string;
   icon?: string;
   name: string = '组织审批';
   private _todoList: ApprovalItem[] = [];
   private _doList: ApprovalItem[] = [];
   private _applyList: ApplyItem[] = [];
   type: TodoType = TodoType.OrgTodo;
-  constructor(id: string, name: string, avatar?: string) {
-    this.id = id;
-    if (avatar) {
-      this.icon = JSON.parse(avatar).thumbnail;
-    }
-    this.name = name;
-  }
+  // constructor(id: string, name: string, avatar?: string) {
+  //   this.id = id;
+  //   if (avatar) {
+  //     this.icon = JSON.parse(avatar).thumbnail;
+  //   }
+  //   this.name = name;
+  // }
   async getCount(): Promise<number> {
     if (this._todoList.length <= 0) {
       await this.getTodoList();
@@ -53,7 +53,7 @@ class OrgTodo implements ITodoGroup {
   }
   async getApplyList(page: model.PageRequest): Promise<IApplyItemResult> {
     const res = await kernel.queryJoinTeamApply({
-      id: this.id,
+      // id: this.id,
       page,
     });
     if (res.success && res.data.result) {
@@ -74,7 +74,7 @@ class OrgTodo implements ITodoGroup {
   }
   private async getApprovalList() {
     const res = await kernel.queryTeamJoinApproval({
-      id: this.id,
+      // id: this.id,
       page: {
         offset: 0,
         limit: common.Constants.MAX_UINT_16,
@@ -172,14 +172,8 @@ class ApplyItem implements IApplyItem {
 }
 
 /** 加载组织任务 */
-export const loadOrgTodo = async (
-  targets: { id: string; name: string; avatar?: string }[],
-) => {
-  let todoGroups = [];
-  for (const target of targets) {
-    const companyTodo = new OrgTodo(target.id, target.name, target.avatar);
-    await companyTodo.getTodoList();
-    todoGroups.push(companyTodo);
-  }
-  return todoGroups;
+export const loadOrgTodo = async () => {
+  const orgTodo = new OrgTodo();
+  await orgTodo.getTodoList();
+  return orgTodo;
 };
