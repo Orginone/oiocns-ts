@@ -1,10 +1,11 @@
 import { kernel } from '../../base';
 import { XImMsg } from '../../base/schema';
 import { emitter, findTargetShare, IChat, IChatGroup, LoadChats } from '../../core';
-import userCtrl from '../setting/userCtrl';
+import userCtrl from '../setting';
 import { DomainTypes, TargetType } from '../../core/enum';
 import { Emitter } from '../../base/common';
 import { TargetShare } from '../../base/model';
+import { SubscribeKeys } from '../../core/communicate/SubscribeKeys';
 
 // 会话缓存对象名称
 const chatsObjectName = 'userchat';
@@ -199,7 +200,7 @@ class ChatController extends Emitter {
           c.receiveMessage(data, !this.isCurrent(c));
           this._appendChats(c);
           this._cacheChats();
-          this.changCallback();
+          this.changCallbackPart(SubscribeKeys.receiveMessgae);
           return;
         }
       }

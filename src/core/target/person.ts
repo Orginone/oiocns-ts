@@ -19,7 +19,6 @@ export default class Person extends MarketTarget implements IPerson {
   joinedCompany: ICompany[] = [];
   constructor(target: schema.XTarget) {
     super(target);
-
     this.searchTargetType = [TargetType.Cohort, TargetType.Person, ...companyTypes];
     this.subTeamTypes = [];
     this.joinTargetType = [TargetType.Person, TargetType.Cohort, ...companyTypes];
@@ -65,7 +64,9 @@ export default class Person extends MarketTarget implements IPerson {
     const res = await this.getjoinedTargets([TargetType.Cohort], this.id);
     if (res && res.result) {
       this.cohorts = res.result.map((a) => {
-        return new Cohort(a);
+        return new Cohort(a, () => {
+          this.cohorts = this.cohorts.filter((i) => i.id != a.id);
+        });
       });
     }
     return this.cohorts;
@@ -76,7 +77,8 @@ export default class Person extends MarketTarget implements IPerson {
     }
     const res = await this.getjoinedTargets(companyTypes, this.id);
     if (res && res.result) {
-      this.joinedCompany = res.result.map((a) => {
+      this.joinedCompany = [];
+      for (const a of res.result) {
         let company;
         switch (a.typeName) {
           case TargetType.University:
@@ -89,8 +91,8 @@ export default class Person extends MarketTarget implements IPerson {
             company = new Company(a, this.id);
             break;
         }
-        return company;
-      });
+        this.joinedCompany.push(company);
+      }
     }
     return this.joinedCompany;
   }
@@ -111,7 +113,9 @@ export default class Person extends MarketTarget implements IPerson {
       teamRemark: remark,
     });
     if (res.success && res.data != undefined) {
-      const cohort = new Cohort(res.data);
+      const cohort = new Cohort(res.data, () => {
+        this.cohorts = this.cohorts.filter((i) => i.id != res.data.id);
+      });
       this.cohorts.push(cohort);
       cohort.pullMember(this.target);
       return cohort;
@@ -134,20 +138,22 @@ export default class Person extends MarketTarget implements IPerson {
       const res = await this.createTarget(data);
       if (res.success && res.data != undefined) {
         let company;
-        switch (<TargetType>data.typeName) {
-          case TargetType.University:
-            company = new University(res.data, this.id);
-            break;
-          case TargetType.Hospital:
-            company = new Hospital(res.data, this.id);
-            break;
-          default:
-            company = new Company(res.data, this.id);
-            break;
+        if (res.success) {
+          switch (<TargetType>data.typeName) {
+            case TargetType.University:
+              company = new University(res.data, this.id);
+              break;
+            case TargetType.Hospital:
+              company = new Hospital(res.data, this.id);
+              break;
+            default:
+              company = new Company(res.data, this.id);
+              break;
+          }
+          this.joinedCompany.push(company);
+          company.pullMember(this.target);
+          return company;
         }
-        this.joinedCompany.push(company);
-        company.pullMember(this.target);
-        return company;
       }
     } else {
       logger.warn(consts.IsExistError);

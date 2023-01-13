@@ -9,18 +9,18 @@ import {
   emitter,
 } from '../../core';
 import { Emitter } from '../../base/common';
-
-export const WORK_INIT = "__work_init__";
+import userCtrl from '../setting';
+import {sum} from '../../utils/collection';
 
 /** 待办控制器 */
 class TodoController extends Emitter {
+  public currentKey: string = '';
   private _orgTodo: ITodoGroup | undefined;
-  private _pubTodo: ITodoGroup | undefined;
+  private _pubTodo: ITodoGroup[] = [];
   private _orderTodo: ITodoGroup | undefined;
-  private _marketTodo: ITodoGroup | undefined;
+  private _marketTodo: ITodoGroup[] = [];
   private _appTodo: ITodoGroup[] = [];
   private _curAppTodo: ITodoGroup | undefined;
-  
   constructor() {
     super();
     this.init();
@@ -30,6 +30,16 @@ class TodoController extends Emitter {
   async init() {
     this._initState = new Promise((s, e) => {
       this.subscribePart(DomainTypes.User, async () => {
+        let orgTodoTypes = [
+          {
+            id: userCtrl.user.id,
+            name: '好友管理',
+            avatar: userCtrl.user.target.avatar,
+          },
+        ];
+        orgTodoTypes.push(
+          ...(await userCtrl.user.getJoinedCompanys(false)).map((a) => a.target),
+        );
         try {
           [
             this._orgTodo, 
@@ -66,8 +76,6 @@ class TodoController extends Emitter {
     await this._initState;
   }
   
-  // 以下类型实际上均可能为undefined
-
   /** 组织单位审批 */
   public get OrgTodo(): ITodoGroup {
     return this._orgTodo!;
@@ -77,7 +85,7 @@ class TodoController extends Emitter {
     return this._appTodo!;
   }
   /** 市场审批 */
-  public get MarketTodo(): ITodoGroup {
+  public get MarketTodo(): ITodoGroup[] {
     return this._marketTodo!;
   }
   /** 订单审批 */
@@ -85,7 +93,7 @@ class TodoController extends Emitter {
     return this._orderTodo!;
   }
   /** 应用上架审批 */
-  public get PublishTodo(): ITodoGroup {
+  public get PublishTodo(): ITodoGroup[] {
     return this._pubTodo!;
   }
   /** 当前选中的应用待办 */
@@ -97,21 +105,25 @@ class TodoController extends Emitter {
     this._curAppTodo = this._appTodo.find((n: ITodoGroup) => n.id === id);
     this.changCallbackPart('CurAppTodo');
   };
-  /**当前好友待办数量 */
-  public firendTodoCount = () => {
-    this._orgTodo;
-  };
   /** 获取总的待办数量 */
   public async getTaskCount(): Promise<number> {
-    let sum = 0;
-    sum += (await this._orgTodo?.getCount()) ?? 0;
-    sum += (await this._marketTodo?.getCount()) ?? 0;
-    sum += (await this._orderTodo?.getCount()) ?? 0;
-    sum += (await this._pubTodo?.getCount()) ?? 0;
-    this._appTodo.forEach(async (item) => {
-      sum += await item.getCount();
-    });
-    return sum;
+    let count = 0;
+    count += (await this._orderTodo?.getCount()) ?? 0;
+    count += (await this._orgTodo?.getCount()) ?? 0;
+    count += sum(await Promise.all([
+
+      // HACK: 数组的forEach传递异步方法，并不会等待其返回，
+      // 如果这样写方法将在接口发完之前就返回错误的合计数
+
+      ...this.MarketTodo
+        .filter(a => !!a.id)
+        .map(async a => (await a?.getCount()) ?? 0),
+      ...this.PublishTodo
+        .filter(a => !!a.id)
+        .map(async a => (await a?.getCount()) ?? 0),
+      ...this._appTodo.map(async a => await a.getCount()),
+    ]))
+    return count;
   }
 }
 

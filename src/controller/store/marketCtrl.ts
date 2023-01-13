@@ -5,8 +5,9 @@ import {
   STORE_RECENTLY_APPS,
   STORE_USER_MENU,
 } from '@/constants/const';
-import { logger,Emitter } from '../../base/common';
-import userCtrl from '../setting/userCtrl';
+// import { message } from 'antd';
+import { Emitter } from '../../base/common';
+import userCtrl from '../setting';
 import { XMerchandise } from '../../base/schema';
 
 export interface TreeType {
@@ -169,11 +170,11 @@ class MarketController extends Emitter {
    */
   async appendStaging(data: XMerchandise) {
     if (this._shopinglist.some((item) => item.id === data?.id)) {
-      logger.warn('您已添加该商品，请勿重复添加');
+      // message.warning('您已添加该商品，请勿重复添加');
       return;
     } else {
       this._shopinglist.unshift(data);
-      logger.info('添加成功');
+      // message.success('添加成功');
     }
     this.updateShoppingCar(this._shopinglist);
   }
@@ -185,7 +186,7 @@ class MarketController extends Emitter {
    */
   async deleteStaging(ids: string[]) {
     this._shopinglist = this._shopinglist.filter((item) => !ids.includes(item.id));
-    logger.info('移出成功');
+    // message.success('移出成功');
     await this.updateShoppingCar(this._shopinglist);
   }
 
@@ -225,7 +226,7 @@ class MarketController extends Emitter {
       if (success) {
         this._shopinglist = this._shopinglist.filter((item) => !ids.includes(item.id));
         this.updateShoppingCar(this._shopinglist);
-        logger.info('下单成功');
+        // message.success('下单成功');
       }
     }
   }

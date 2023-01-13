@@ -10,11 +10,12 @@ import {
   ITarget,
   findTargetShare,
 } from '../../core';
-import { RegisterType, TargetShare } from '../../base/model';
 const sessionUserName = 'sessionUser';
 const sessionSpaceName = 'sessionSpace';
-/** 用户控制器 */
-class UserController extends Emitter {
+/**
+ * 设置控制器
+ */
+class SettingController extends Emitter {
   public currentKey: string = '';
   private _user: IPerson | undefined;
   private _curSpace: ICompany | undefined;
@@ -23,17 +24,18 @@ class UserController extends Emitter {
     super();
     const userJson = sessionStorage.getItem(sessionUserName);
     if (userJson && userJson.length > 0) {
-      this._loadUser(JSON.parse(userJson));
+      this._user = createPerson(JSON.parse(userJson));
       setTimeout(async () => {
-        await this._user?.getJoinedCompanys();
+        await this._loadUser(JSON.parse(userJson));
         this._curSpace = this._findCompany(
           sessionStorage.getItem(sessionSpaceName) || '',
         );
         if (this._curSpace) {
+          await kernel.genToken(this.space.id);
           this.changCallbackPart(DomainTypes.Company);
           emitter.changCallbackPart(DomainTypes.Company);
         }
-      }, 10);
+      }, 500);
     }
   }
   /** 是否已登录 */
@@ -81,6 +83,7 @@ class UserController extends Emitter {
     if (this.currentKey === '') {
       this.currentKey = this.space.key;
     }
+    kernel.genToken(id);
     this.changCallbackPart(DomainTypes.Company);
     emitter.changCallbackPart(DomainTypes.Company);
   }
@@ -119,7 +122,7 @@ class UserController extends Emitter {
    * 查询组织信息
    * @param id 组织id
    */
-  public findTeamInfoById(id: string): TargetShare {
+  public findTeamInfoById(id: string): model.TargetShare {
     return findTargetShare(id);
   }
   /**
@@ -138,7 +141,7 @@ class UserController extends Emitter {
    * 注册用户
    * @param {RegisterType} params 参数
    */
-  public async register(params: RegisterType): Promise<model.ResultType<any>> {
+  public async register(params: model.RegisterType): Promise<model.ResultType<any>> {
     let res = await kernel.register(params);
     if (res.success) {
       await this._loadUser(res.data.person);
@@ -164,7 +167,7 @@ class UserController extends Emitter {
     sessionStorage.setItem(sessionUserName, JSON.stringify(person));
     this._user = createPerson(person);
     this._curSpace = undefined;
-    await this._user.getJoinedCompanys(false);
+    await this._user?.getJoinedCompanys();
     this.changCallbackPart(DomainTypes.User);
     emitter.changCallbackPart(DomainTypes.User);
   }
@@ -180,4 +183,4 @@ class UserController extends Emitter {
   }
 }
 
-export default new UserController();
+export default new SettingController();

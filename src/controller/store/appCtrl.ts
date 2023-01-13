@@ -2,7 +2,7 @@ import { STORE_RECENTLY_APPS, STORE_USER_MENU } from '@/constants/const';
 import { kernel } from '../../base';
 import { Emitter } from '../../base/common';
 import { DomainTypes, emitter, IProduct, ISpace } from '../../core';
-import userCtrl from '../setting/userCtrl';
+import userCtrl from '../setting';
 
 export interface TreeType {
   title: string;
