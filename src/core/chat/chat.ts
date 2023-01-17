@@ -3,6 +3,7 @@ import { schema, kernel, model, common, parseAvatar } from '../../base';
 import { TargetType, MessageType } from '../enum';
 import { appendShare, appendTarget } from '../target/targetMap';
 import { ChatCache, IChat } from './ichat';
+import { reactive } from 'vue';
 
 // 历史会话存储集合名称
 const hisMsgCollName = 'chat-message';
@@ -257,7 +258,7 @@ class CohortChat extends BaseChat {
     }
   }
 }
-
+// TODO: 兼容除 vue 外的其他版本
 export const CreateChat = (
   id: string,
   name: string,
@@ -265,8 +266,8 @@ export const CreateChat = (
   userId: string,
 ): IChat => {
   if (m.typeName === TargetType.Person) {
-    return new PersonChat(id, name, m, userId);
+    return reactive(new PersonChat(id, name, m, userId));
   } else {
-    return new CohortChat(id, name, m, userId);
+    return reactive(new CohortChat(id, name, m, userId));
   }
 };

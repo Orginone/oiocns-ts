@@ -6,6 +6,7 @@ import { DomainTypes, TargetType } from '../../core/enum';
 import { Emitter } from '../../base/common';
 import { TargetShare } from '../../base/model';
 import { SubscribeKeys } from '../../core/communicate/SubscribeKeys';
+import { reactive } from 'vue';
 
 // 会话缓存对象名称
 const chatsObjectName = 'userchat';
