@@ -30,6 +30,8 @@ export type {
   ITarget,
   IWorking,
 } from './target/itarget';
+export type { IDict,INullDict } from './target/species/idict';
+export { Dict } from './target/species/dict';
 export { findTargetShare } from './target/targetMap';
 export type { INullSpeciesItem, ISpeciesItem } from './thing';
 export { loadSpeciesTree } from './thing';

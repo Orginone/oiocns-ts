@@ -22,11 +22,9 @@ export default class BaseTarget implements ITarget {
   public authorityTree: Authority | undefined;
   public ownIdentitys: schema.XIdentity[];
   public identitys: IIdentity[];
-
   public createTargetType: TargetType[];
   public joinTargetType: TargetType[];
   public searchTargetType: TargetType[];
-
   public get id(): string {
     return this.target.id;
   }

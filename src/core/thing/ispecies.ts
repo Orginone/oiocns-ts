@@ -1,5 +1,13 @@
-import { AttributeModel, PageRequest, SpeciesModel, TargetShare } from '../../base/model';
-import { XAttributeArray, XSpecies } from '../../base/schema';
+import { INullDict } from '../target/species/idict';
+import {
+  AttributeModel,
+  DictModel,
+  OperationModel,
+  PageRequest,
+  SpeciesModel,
+  TargetShare,
+} from '../../base/model';
+import { XAttributeArray, XOperationArray, XSpecies } from '../../base/schema';
 
 /** 可为空的标准分类 */
 export type INullSpeciesItem = ISpeciesItem | undefined;
@@ -26,11 +34,28 @@ export interface ISpeciesItem {
   loadInfo(info: TargetShare): Promise<ISpeciesItem>;
   /** 加载分类特性 */
   loadAttrs(id: string, page: PageRequest): Promise<XAttributeArray>;
+  /** 加载业务标准 */
+  loadOperations(id: string, page: PageRequest): Promise<XOperationArray>;
   /**
    * 创建标准分类项
    * @param data 创建参数
    */
   create(data: Omit<SpeciesModel, 'id' | 'parentId'>): Promise<INullSpeciesItem>;
+  /**
+   * 创建字典
+   * @param data 创建参数
+   */
+  createDict(data: Omit<DictModel, 'id' | 'parentId'>): Promise<INullDict>;
+  /**
+   * 更新分类特性项
+   * @param data 创建参数
+   */
+  updateDict(data: Omit<DictModel, 'speciesId' | 'speciesCode'>): Promise<boolean>;
+  /**
+   * 删除字典
+   * @param id 特性项id
+   */
+  deleteDict(id: string): Promise<boolean>;
   /**
    * 更新标准分类项
    * @param data 创建参数
@@ -53,6 +78,25 @@ export interface ISpeciesItem {
    * @param id 特性项id
    */
   deleteAttr(id: string): Promise<boolean>;
+  /**
+   * 创建业务标准
+   * @param data 创建参数
+   */
+  createOperation(
+    data: Omit<OperationModel, 'id' | 'speciesId' | 'speciesCode'>,
+  ): Promise<boolean>;
+  /**
+   * 更新业务标准
+   * @param data 创建参数
+   */
+  updateOperation(
+    data: Omit<OperationModel, 'speciesId' | 'speciesCode'>,
+  ): Promise<boolean>;
+  /**
+   * 删除业务标准
+   * @param id 特性项id
+   */
+  deleteOperation(id: string): Promise<boolean>;
   /**
    * 删除标准分类项
    */

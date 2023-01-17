@@ -1,10 +1,14 @@
 import { kernel, parseAvatar, schema } from '../../../base';
 import {
   AttributeModel,
+  DictModel,
+  OperationModel,
   PageRequest,
   SpeciesModel,
   TargetShare,
 } from '../../../base/model';
+import { Dict } from './dict';
+import { INullDict } from './idict';
 import { INullSpeciesItem, ISpeciesItem } from './ispecies';
 /**
  * 分类系统项实现
@@ -33,6 +37,19 @@ export class SpeciesItem implements ISpeciesItem {
   }
   async loadAttrs(id: string, page: PageRequest): Promise<schema.XAttributeArray> {
     const res = await kernel.querySpeciesAttrs({
+      id: this.id,
+      spaceId: id,
+      page: {
+        offset: page.offset,
+        limit: page.limit,
+        filter: '',
+      },
+    });
+    return res.data;
+  }
+
+  async loadOperations(id: string, page: PageRequest): Promise<schema.XOperationArray> {
+    const res = await kernel.querySpeciesOperation({
       id: this.id,
       spaceId: id,
       page: {
@@ -74,6 +91,27 @@ export class SpeciesItem implements ISpeciesItem {
     }
     return;
   }
+
+  async createDict(data: Omit<DictModel, 'id' | 'parentId'>): Promise<INullDict> {
+    const res = await kernel.createDict({
+      ...data,
+      id: undefined,
+      speciesId: this.id,
+    });
+    if (res.success) {
+      const newItem = new Dict(res.data);
+      return newItem;
+    }
+    return;
+  }
+
+  async updateDict(data: DictModel): Promise<boolean> {
+    const res = await kernel.updateDict({
+      ...data,
+    });
+    return res.success;
+  }
+
   async update(
     data: Omit<SpeciesModel, 'id' | 'parentId' | 'code'>,
   ): Promise<ISpeciesItem> {
@@ -127,6 +165,43 @@ export class SpeciesItem implements ISpeciesItem {
   }
   async deleteAttr(id: string): Promise<boolean> {
     const res = await kernel.deleteAttribute({
+      id: id,
+      typeName: '',
+    });
+    return res.success;
+  }
+
+  async createOperation(
+    data: Omit<OperationModel, 'id' | 'speciesId' | 'speciesCode'>,
+  ): Promise<boolean> {
+    const res = await kernel.createOperation({
+      id: undefined,
+      speciesId: this.id,
+      ...data,
+    });
+    return res.success;
+  }
+
+  async updateOperation(
+    data: Omit<OperationModel, 'speciesId' | 'speciesCode'>,
+  ): Promise<boolean> {
+    const res = await kernel.updateOperation({
+      ...data,
+      speciesId: this.target.id,
+    });
+    return res.success;
+  }
+
+  async deleteOperation(id: string): Promise<boolean> {
+    const res = await kernel.deleteOperation({
+      id: id,
+      typeName: '',
+    });
+    return res.success;
+  }
+
+  async deleteDict(id: string): Promise<boolean> {
+    const res = await kernel.deleteDict({
       id: id,
       typeName: '',
     });

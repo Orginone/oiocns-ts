@@ -1,6 +1,7 @@
 import { kernel } from '../../base';
 import { INullSpeciesItem } from './ispecies';
 import { SpeciesItem } from './species';
+import { PageRequest } from '../../base/model';
 
 /**
  * 加载分类树
