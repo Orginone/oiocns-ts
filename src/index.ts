@@ -10,9 +10,9 @@ import portalCtrl from "./controller/store/portalCtrl"
 import dictionaryCtrl from "./controller/setting/dictionaryCtrl"
 import {logger,LoggerLevel} from "./base/common/"
 
-import { IFileSystemItem, IObjectItem,INullSpeciesItem, Dict} from './core/';
-import { TargetType} from './core/enum';
-import { ICompany,SpaceType } from './core/target/itarget';
+import { IFileSystemItem, IObjectItem,INullSpeciesItem, Dict} from './core/'
+import { TargetType} from './core/enum'
+import { ICompany,SpaceType } from './core/target/itarget'
 /**
  * 顶层归口服务
 */
