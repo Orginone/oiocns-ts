@@ -7,7 +7,7 @@ import {
   SpeciesModel,
   TargetShare,
 } from '../../base/model';
-import { XAttributeArray, XOperationArray, XSpecies } from '../../base/schema';
+import { XAttributeArray, XOperationArray, XSpecies } from '../../base/schema'
 
 /** 可为空的标准分类 */
 export type INullSpeciesItem = ISpeciesItem | undefined;
