@@ -3,7 +3,7 @@ import { schema, kernel, model, common, parseAvatar } from '../../base';
 import { TargetType, MessageType } from '../enum';
 import { appendShare, appendTarget } from '../target/targetMap';
 import { ChatCache, IChat } from './ichat';
-import { reactive } from 'vue';
+import { isReactive, reactive } from 'vue';
 
 // 历史会话存储集合名称
 const hisMsgCollName = 'chat-message';
@@ -29,6 +29,7 @@ class BaseChat implements IChat {
     this.spaceName = name;
     this.target = m;
     this.messages = [];
+    // this.messages = reactive([]);
     this.persons = [];
     this.personCount = 0;
     this.chatId = m.id;
@@ -129,7 +130,7 @@ class BaseChat implements IChat {
     });
     return res.success;
   }
-  receiveMessage(msg: schema.XImMsg, noread: boolean = true) {
+  receiveMessage(msg: schema.XImMsg , noread: boolean = true) {
     if (msg) {
       if (msg.msgType === 'recall') {
         msg.showTxt = '撤回一条消息';
@@ -150,6 +151,7 @@ class BaseChat implements IChat {
     }
   }
   protected loadMessages(msgs: schema.XImMsg[]): void {
+    console.log(this, isReactive(this));
     msgs.forEach((item: any) => {
       if (item.chatId) {
         item.id = item.chatId;
@@ -158,7 +160,7 @@ class BaseChat implements IChat {
       this.messages.unshift(item);
     });
   }
-  protected async loadCacheMessages(): Promise<number> {
+  protected async loadCacheMessages(): Promise<number> {    
     const res = await kernel.anystore.aggregate(
       hisMsgCollName,
       {
@@ -258,7 +260,7 @@ class CohortChat extends BaseChat {
     }
   }
 }
-// TODO: 兼容除 vue 外的其他版本
+
 export const CreateChat = (
   id: string,
   name: string,
