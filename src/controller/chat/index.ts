@@ -1,20 +1,26 @@
-import { kernel } from '../../base';
-import { XImMsg } from '../../base/schema';
-import { emitter, findTargetShare, IChat, IChatGroup, LoadChats } from '../../core';
-import userCtrl from '../setting';
-import { DomainTypes, TargetType } from '../../core/enum';
-import { Emitter } from '../../base/common';
-import { TargetShare } from '../../base/model';
-import { SubscribeKeys } from '../../core/communicate/SubscribeKeys';
+import { kernel } from "../../base";
+import { XImMsg } from "../../base/schema";
+import {
+  emitter,
+  findTargetShare,
+  IChat,
+  IChatGroup,
+  LoadChats,
+} from "../../core";
+import userCtrl from "../setting";
+import { DomainTypes, TargetType } from "../../core/enum";
+import { Emitter } from "../../base/common";
+import { TargetShare } from "../../base/model";
+import { SubscribeKeys } from "../../core/communicate/SubscribeKeys";
 
 // 会话缓存对象名称
-const chatsObjectName = 'userchat';
+const chatsObjectName = "userchat";
 /**
  * 会话控制器
  */
 class ChatController extends Emitter {
-  private _tabIndex: string = '1';
-  private _userId: string = '';
+  private _tabIndex: string = "1";
+  private _userId: string = "";
   private _groups: IChatGroup[] = [];
   private _chats: IChat[] = [];
   private _curChat: IChat | undefined;
@@ -62,7 +68,7 @@ class ChatController extends Emitter {
         }
       }
     }
-    return '未知';
+    return "未知";
   }
   /**
    * 查询组织信息
@@ -89,15 +95,17 @@ class ChatController extends Emitter {
    * @param chat 会话
    */
   public async setCurrent(chat: IChat | undefined): Promise<void> {
-    this._tabIndex = '1';
+    this._tabIndex = "1";
     this._curChat = this.findChat(chat);
+
     if (this._curChat) {
       this._curChat.noReadCount = 0;
-      await this._curChat.moreMessage('');
+      await this._curChat.moreMessage("");
       if (this._curChat.persons.length === 0) {
-        await this._curChat.morePerson('');
+        await this._curChat.morePerson("");
       }
       this._appendChats(this._curChat);
+
       this._cacheChats();
     }
     this.changCallback();
@@ -108,7 +116,8 @@ class ChatController extends Emitter {
    */
   public isCurrent(chat: IChat): boolean {
     return (
-      this._curChat?.chatId === chat.chatId && this._curChat?.spaceId === chat.spaceId
+      this._curChat?.chatId === chat.chatId &&
+      this._curChat?.spaceId === chat.spaceId
     );
   }
   /**
@@ -116,7 +125,7 @@ class ChatController extends Emitter {
    * @param item 激活的通讯录
    */
   public setGroupActive(item: IChatGroup): void {
-    this._tabIndex = '2';
+    this._tabIndex = "2";
     for (const group of this._groups) {
       if (group.spaceId === item.spaceId) {
         group.isOpened = !group.isOpened;
@@ -159,7 +168,7 @@ class ChatController extends Emitter {
   /** 初始化 */
   private async _initialization(): Promise<void> {
     this._groups = await LoadChats(this._userId);
-    kernel.anystore.subscribed(chatsObjectName, 'user', (data: any) => {
+    kernel.anystore.subscribed(chatsObjectName, "user", (data: any) => {
       this._chats = [];
       if ((data?.chats?.length ?? 0) > 0) {
         for (let item of data.chats) {
@@ -172,10 +181,10 @@ class ChatController extends Emitter {
         this.changCallback();
       }
     });
-    kernel.on('RecvMsg', (data) => {
+    kernel.on("RecvMsg", (data) => {
       this._recvMessage(data);
     });
-    kernel.on('ChatRefresh', async () => {
+    kernel.on("ChatRefresh", async () => {
       this._groups = await LoadChats(this._userId);
       this.setCurrent(this._curChat);
     });
@@ -245,7 +254,7 @@ class ChatController extends Emitter {
     kernel.anystore.set(
       chatsObjectName,
       {
-        operation: 'replaceAll',
+        operation: "replaceAll",
         data: {
           chats: this.chats
             .map((item) => {
@@ -254,7 +263,7 @@ class ChatController extends Emitter {
             .reverse(),
         },
       },
-      'user',
+      "user"
     );
   }
 }

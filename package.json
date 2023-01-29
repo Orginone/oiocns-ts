@@ -30,5 +30,8 @@
     "yalc-watch": "0.0.6"
   },
   "description": "",
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "vue": "^3.2.45"
+  }
 }
