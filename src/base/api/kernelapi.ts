@@ -164,6 +164,76 @@ export default class KernelApi {
     return res;
   }
   /**
+ * 创建业务标准
+ * @param {model.OperationModel} params 请求参数
+ * @returns {model.ResultType<schema.XOperation>} 请求结果
+ */
+  public async createOperation(
+    params: model.OperationModel,
+  ): Promise<model.ResultType<schema.XOperation>> {
+    return await this.request({
+      module: 'thing',
+      action: 'CreateOperation',
+      params: params,
+    });
+  }
+  /**
+   * 创建业务标准项
+   * @param {model.OperationModel} params 请求参数
+   * @returns {model.ResultType<schema.XOperation>} 请求结果
+   */
+  public async createOperationItem(
+    params: model.OperationItemModel,
+  ): Promise<model.ResultType<schema.XOperationItem>> {
+    return await this.request({
+      module: 'thing',
+      action: 'CreateOperationItem',
+      params: params,
+    });
+  }
+   /**
+   * 更新业务标准
+   * @param {model.OperationModel} params 请求参数
+   * @returns {model.ResultType<schema.XOperation>} 请求结果
+   */
+   public async updateOperation(
+    params: model.OperationModel,
+  ): Promise<model.ResultType<schema.XOperation>> {
+    return await this.request({
+      module: 'thing',
+      action: 'UpdateOperation',
+      params: params,
+    });
+  }
+  /**
+   * 更新业务标准项
+   * @param {model.OperationModel} params 请求参数
+   * @returns {model.ResultType<schema.XOperationItem>} 请求结果
+   */
+  public async updateOperationItem(
+    params: model.OperationItemModel,
+  ): Promise<model.ResultType<schema.XOperationItem>> {
+    return await this.request({
+      module: 'thing',
+      action: 'UpdateOperationItem',
+      params: params,
+    });
+  }
+  /**
+   * 删除业务标准
+   * @param {model.IdReqModel} params 请求参数
+   * @returns {model.ResultType<boolean>} 请求结果
+   */
+  public async deleteOperation(
+    params: model.IdReqModel,
+  ): Promise<model.ResultType<boolean>> {
+    return await this.request({
+      module: 'thing',
+      action: 'DeleteOperation',
+      params: params,
+    });
+  }
+  /**
    * 创建字典类型
    * @param {model.DictModel} params 请求参数
    * @returns {model.ResultType<schema.XDict>} 请求结果
@@ -172,7 +242,7 @@ export default class KernelApi {
     params: model.DictModel,
   ): Promise<model.ResultType<schema.XDict>> {
     return await this.request({
-      module: 'base',
+      module: 'thing',
       action: 'CreateDict',
       params: params,
     });
@@ -186,7 +256,7 @@ export default class KernelApi {
     params: model.DictItemModel,
   ): Promise<model.ResultType<schema.XDictItem>> {
     return await this.request({
-      module: 'base',
+      module: 'thing',
       action: 'CreateDictItem',
       params: params,
     });
@@ -198,7 +268,7 @@ export default class KernelApi {
    */
   public async deleteDict(params: model.IdReqModel): Promise<model.ResultType<boolean>> {
     return await this.request({
-      module: 'base',
+      module: 'thing',
       action: 'DeleteDict',
       params: params,
     });
@@ -212,7 +282,7 @@ export default class KernelApi {
     params: model.IdReqModel,
   ): Promise<model.ResultType<boolean>> {
     return await this.request({
-      module: 'base',
+      module: 'thing',
       action: 'DeleteDictItem',
       params: params,
     });
@@ -226,7 +296,7 @@ export default class KernelApi {
     params: model.DictModel,
   ): Promise<model.ResultType<schema.XDict>> {
     return await this.request({
-      module: 'base',
+      module: 'thing',
       action: 'UpdateDict',
       params: params,
     });
@@ -240,7 +310,7 @@ export default class KernelApi {
     params: model.DictItemModel,
   ): Promise<model.ResultType<schema.XDictItem>> {
     return await this.request({
-      module: 'base',
+      module: 'thing',
       action: 'UpdateDictItem',
       params: params,
     });
@@ -456,6 +526,62 @@ export default class KernelApi {
     return await this.request({
       module: 'thing',
       action: 'QuerySpeciesAttrs',
+      params: params,
+    });
+  }
+  /**
+   * 查询分类的业务标准
+   * @param {model.IdSpaceReq} params 请求参数
+   * @returns {model.ResultType<schema.XOperationArray>} 请求结果
+   */
+  public async querySpeciesOperation(
+    params: model.IdSpaceReq,
+  ): Promise<model.ResultType<schema.XOperationArray>> {
+    return await this.request({
+      module: 'thing',
+      action: 'QuerySpeciesOperation',
+      params: params,
+    });
+  }
+  /**
+   * 查询分类的业务标准项
+   * @param {model.IdSpaceReq} params 请求参数
+   * @returns {model.ResultType<schema.XOperationItemArray>} 请求结果
+   */
+  public async queryOperationItems(
+    params: model.IdSpaceReq,
+  ): Promise<model.ResultType<schema.XOperationItemArray>> {
+    return await this.request({
+      module: 'thing',
+      action: 'QueryOperationItems',
+      params: params,
+    });
+  }
+  /**
+   * 查询分类字典
+   * @param {model.IdSpaceReq} params 请求参数
+   * @returns {model.ResultType<schema.XDictArray>} 请求结果
+   */
+  public async querySpeciesDict(
+    params: model.IdSpaceReq,
+  ): Promise<model.ResultType<schema.XDictArray>> {
+    return await this.request({
+      module: 'thing',
+      action: 'QuerySpeciesDict',
+      params: params,
+    });
+  }
+  /**
+   * 查询字典项
+   * @param {model.IdSpaceReq} params 请求参数
+   * @returns {model.ResultType<schema.XDictItemArray>} 请求结果
+   */
+  public async queryDictItems(
+    params: model.IdSpaceReq,
+  ): Promise<model.ResultType<schema.XDictItemArray>> {
+    return await this.request({
+      module: 'thing',
+      action: 'QueryDictItems',
       params: params,
     });
   }

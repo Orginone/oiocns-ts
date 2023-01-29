@@ -232,7 +232,7 @@ export type ApprovalModel = {
 
 export type DictModel = {
   // 唯一ID
-  id: string;
+  id: string | undefined;
   // 名称
   name: string;
   // 编号
@@ -241,6 +241,8 @@ export type DictModel = {
   public: boolean;
   // 创建组织/个人
   belongId: string;
+  // 分类Id
+  speciesId: string;
   // 备注
   remark: string;
 };
@@ -319,6 +321,40 @@ export type AttributeModel = {
   speciesCode: string;
   // 工作职权Id
   authId: string;
+};
+
+export type OperationModel = {
+  // 唯一ID
+  id?: string;
+  // 名称
+  name: string;
+  // 编号
+  code: string;
+  // 公开的
+  public: boolean;
+  // 备注
+  remark: string;
+  // 创建组织/个人
+  belongId: string;
+  // 类别Id
+  speciesId: string;
+};
+
+export type OperationItemModel = {
+  // 唯一ID
+  id?: string;
+  // 名称
+  name: string;
+  // 编号
+  code: string;
+  // 规则
+  rule: string;
+  // 备注
+  remark: string;
+  // 创建组织/个人
+  belongId: string;
+  // 业务Id
+  operationId: string;
 };
 
 export type AuthorityModel = {

@@ -1,6 +1,7 @@
 import { kernel } from '../../base';
 import { INullSpeciesItem } from './ispecies';
 import { SpeciesItem } from './species';
+import { PageRequest } from '../../base/model';
 
 /**
  * 加载分类树
@@ -12,7 +13,7 @@ export const loadSpeciesTree = async (id: string) => {
   if (res.success) {
     item = new SpeciesItem(res.data, undefined);
   }
-  return item;
+  return item
 };
 
 export type { INullSpeciesItem, ISpeciesItem } from './ispecies';
