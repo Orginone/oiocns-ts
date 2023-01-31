@@ -29,7 +29,6 @@ class BaseChat implements IChat {
     this.spaceName = name;
     this.target = m;
     // this.messages = [];
-    // TODO 兼容性适配
     this.messages = fromVue ? reactive([]) : [];
     this.persons = [];
     this.personCount = 0;
