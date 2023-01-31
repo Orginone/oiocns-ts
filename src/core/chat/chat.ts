@@ -24,13 +24,13 @@ class BaseChat implements IChat {
   noReadCount: number;
   userId: string;
   lastMessage: schema.XImMsg | undefined;
-  constructor(id: string, name: string, m: model.ChatModel, userId: string) {
+  constructor(id: string, name: string, m: model.ChatModel, userId: string, fromVue: boolean) {
     this.spaceId = id;
     this.spaceName = name;
     this.target = m;
     // this.messages = [];
     // TODO 兼容性适配
-    this.messages = reactive([]);
+    this.messages = fromVue ? reactive([]) : [];
     this.persons = [];
     this.personCount = 0;
     this.chatId = m.id;
@@ -152,7 +152,6 @@ class BaseChat implements IChat {
     }
   }
   protected loadMessages(msgs: schema.XImMsg[]): void {
-    console.log(this, isReactive(this));
     msgs.forEach((item: any) => {
       if (item.chatId) {
         item.id = item.chatId;
@@ -189,8 +188,8 @@ class BaseChat implements IChat {
  * 人员会话
  */
 class PersonChat extends BaseChat {
-  constructor(id: string, name: string, m: model.ChatModel, userId: string) {
-    super(id, name, m, userId);
+  constructor(id: string, name: string, m: model.ChatModel, userId: string, fromVue: boolean) {
+    super(id, name, m, userId, fromVue);
   }
   override async moreMessage(filter: string): Promise<number> {
     if (this.spaceId === this.userId) {
@@ -218,8 +217,8 @@ class PersonChat extends BaseChat {
  * 群会话
  */
 class CohortChat extends BaseChat {
-  constructor(id: string, name: string, m: model.ChatModel, userId: string) {
-    super(id, name, m, userId);
+  constructor(id: string, name: string, m: model.ChatModel, userId: string, fromVue: boolean) {
+    super(id, name, m, userId, fromVue);
   }
   override async moreMessage(filter: string): Promise<number> {
     if (this.spaceId === this.userId) {
@@ -267,10 +266,11 @@ export const CreateChat = (
   name: string,
   m: model.ChatModel,
   userId: string,
+  fromVue: boolean
 ): IChat => {
   if (m.typeName === TargetType.Person) {
-    return reactive(new PersonChat(id, name, m, userId));
+    return fromVue ? reactive(new PersonChat(id, name, m, userId, fromVue)) : new PersonChat(id, name, m, userId, fromVue) ;
   } else {
-    return reactive(new CohortChat(id, name, m, userId));
+    return fromVue ? reactive(new CohortChat(id, name, m, userId, fromVue)) : new CohortChat(id, name, m, userId, fromVue);
   }
 };

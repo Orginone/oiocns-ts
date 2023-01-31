@@ -1,4 +1,4 @@
-import chatCtrl from "./controller/chat"
+import {ChatController as chatCtrl} from "./controller/chat"
 import userCtrl from "./controller/setting"
 import processCtrl from "./controller/setting/processCtrl"
 import appCtrl from "./controller/store/appCtrl"
