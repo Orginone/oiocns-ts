@@ -6,7 +6,7 @@ import { IChatGroup } from './ichat';
  * 加载通讯录会话
  * @returns 会话接口数组
  */
-export const LoadChats = async (userId: string): Promise<IChatGroup[]> => {
+export const LoadChats = async (userId: string, fromVue: boolean): Promise<IChatGroup[]> => {
   let groups: IChatGroup[] = [];
   const res = await kernel.queryImChats({
     spaceId: userId,
@@ -20,7 +20,7 @@ export const LoadChats = async (userId: string): Promise<IChatGroup[]> => {
         spaceName: item.name,
         isOpened: index === 0,
         chats: item.chats.map((c) => {
-          return CreateChat(item.id, item.name, c, userId);
+          return CreateChat(item.id, item.name, c, userId, fromVue);
         }),
       });
     });

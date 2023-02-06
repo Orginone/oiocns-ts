@@ -18,19 +18,19 @@ const chatsObjectName = "userchat";
 /**
  * 会话控制器
  */
-class ChatController extends Emitter {
+export class ChatController extends Emitter {
   private _tabIndex: string = "1";
   private _userId: string = "";
   private _groups: IChatGroup[] = [];
   private _chats: IChat[] = [];
   private _curChat: IChat | undefined;
-  constructor() {
+  constructor(fromVue = false) {
     super();
     emitter.subscribePart(DomainTypes.User, () => {
       if (this._userId != userCtrl.user.target.id) {
         this._userId = userCtrl.user.target.id;
         setTimeout(async () => {
-          await this._initialization();
+          await this._initialization(fromVue);
         }, 500);
       }
     });
@@ -166,8 +166,8 @@ class ChatController extends Emitter {
     }
   }
   /** 初始化 */
-  private async _initialization(): Promise<void> {
-    this._groups = await LoadChats(this._userId);
+  private async _initialization(fromVue: boolean): Promise<void> {
+    this._groups = await LoadChats(this._userId, fromVue);
     kernel.anystore.subscribed(chatsObjectName, "user", (data: any) => {
       this._chats = [];
       if ((data?.chats?.length ?? 0) > 0) {
@@ -185,7 +185,7 @@ class ChatController extends Emitter {
       this._recvMessage(data);
     });
     kernel.on("ChatRefresh", async () => {
-      this._groups = await LoadChats(this._userId);
+      this._groups = await LoadChats(this._userId, fromVue);
       this.setCurrent(this._curChat);
     });
   }
@@ -268,4 +268,5 @@ class ChatController extends Emitter {
   }
 }
 
-export default new ChatController();
+
+// export default new ChatController();
