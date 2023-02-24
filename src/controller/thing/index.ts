@@ -47,11 +47,11 @@ class ThingController extends Emitter {
     return this.teamSpecies;
   }
 
-  public async loadFormSetTable(params: ILoadFormSetTableParams) {
-    const res = await kernel.querySpeciesOperation(params)
+  // public async loadFormSetTable(params: ILoadFormSetTableParams) {
+  //   const res = await kernel.querySpeciesOperation(params)
 
-    return res
-  }
+  //   return res
+  // }
 }
 
 export default new ThingController();

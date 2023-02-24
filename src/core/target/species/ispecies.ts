@@ -6,8 +6,8 @@ import {
   SpeciesModel,
   TargetShare,
 } from '../../../base/model';
-import { XAttributeArray, XOperationArray, XSpecies } from '../../../base/schema';
-import { INullDict } from './idict';
+import { XAttributeArray, XOperationArray, XSpecies, XDictArray } from '../../../base/schema';
+import { IDict,INullDict } from './idict';
 
 /** 可为空的标准分类 */
 export type INullSpeciesItem = ISpeciesItem | undefined;
@@ -33,9 +33,29 @@ export interface ISpeciesItem {
   /** 加载信息 */
   loadInfo(info: TargetShare): Promise<ISpeciesItem>;
   /** 加载分类特性 */
-  loadAttrs(id: string, page: PageRequest): Promise<XAttributeArray>;
+  loadAttrs(id: string,recursionOrg: boolean,recursionSpecies: boolean, page: PageRequest): Promise<XAttributeArray>;
   /** 加载业务标准 */
-  loadOperations(id: string, page: PageRequest): Promise<XOperationArray>;
+  loadOperations(
+    id: string,
+    filterAuth: boolean,
+    recursionOrg: boolean,
+    recursionSpecies: boolean,
+    page: PageRequest,
+  ): Promise<XOperationArray>;
+  /** 加载分类字典 */
+  loadDicts(
+    id: string,
+    recursionOrg: boolean,
+    recursionSpecies: boolean,
+    page: PageRequest,
+  ): Promise<XDictArray>;
+  /** 加载分类字典实体 */
+  loadDictsEntity(
+    spaceId: string,
+    recursionOrg: boolean,
+    recursionSpecies: boolean,
+    page: PageRequest,
+  ): Promise<IDict[]>;
   /**
    * 创建标准分类项
    * @param data 创建参数
