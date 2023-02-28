@@ -6,7 +6,7 @@ import {
   SpeciesModel,
   TargetShare,
 } from '../../../base/model';
-import { XAttributeArray, XOperationArray, XSpecies, XDictArray } from '../../../base/schema';
+import { XAttributeArray, XOperationArray, XSpecies, XDictArray, XAttribute } from '../../../base/schema';
 import { IDict,INullDict } from './idict';
 
 /** 可为空的标准分类 */
@@ -30,6 +30,8 @@ export interface ISpeciesItem {
   children: ISpeciesItem[];
   /** 归属信息 */
   belongInfo: TargetShare;
+  /** 属性 */
+  attrs?: XAttribute[];
   /** 加载信息 */
   loadInfo(info: TargetShare): Promise<ISpeciesItem>;
   /** 加载分类特性 */
