@@ -548,6 +548,20 @@ export default class KernelApi {
     });
   }
   /**
+   * 查询多个分类下的业务标准
+   * @param {model.IdArraySpaceReq} params 请求参数
+   * @returns {model.ResultType<schema.XOperationArray>} 请求结果
+   */
+  public async queryOperationBySpeciesIds(
+    params: model.IdArraySpaceReq,
+  ): Promise<model.ResultType<schema.XOperationArray>> {
+    return await this.request({
+      module: 'thing',
+      action: 'QueryOperationBySpeciesIds',
+      params: params,
+    });
+  }
+  /**
    * 查询分类的业务标准项
    * @param {model.IdSpaceReq} params 请求参数
    * @returns {model.ResultType<schema.XOperationItemArray>} 请求结果

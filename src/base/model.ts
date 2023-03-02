@@ -48,7 +48,12 @@ export type RegisterType = {
   // 头像
   avatar: string;
 };
-
+export type IdArraySpaceReq = {
+  // 唯一ID
+  ids: string[];
+  // 工作空间ID
+  spaceId: string;
+};
 export type IdReq = {
   // 唯一ID
   id: string;

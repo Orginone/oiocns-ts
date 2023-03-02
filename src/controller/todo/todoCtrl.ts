@@ -11,6 +11,7 @@ import {
 import { Emitter } from '../../base/common';
 import userCtrl from '../setting';
 import {sum} from '../../utils/collection';
+import { kernel } from '../../base/index';
 
 /** 待办控制器 */
 class TodoController extends Emitter {
@@ -124,6 +125,14 @@ class TodoController extends Emitter {
       ...this._appTodo.map(async a => await a.getCount()),
     ]))
     return count;
+  }
+  /** 获取事件详情 */
+  public async queryOperationBySpeciesIds(ids:any,spaceId:string): Promise<any> {
+    const res = await kernel.queryOperationBySpeciesIds({
+      ids:ids,
+      spaceId:spaceId
+    });
+    return res;
   }
 }
 
