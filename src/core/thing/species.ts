@@ -122,7 +122,16 @@ export class SpeciesItem implements ISpeciesItem {
     });
     return res.data;
   }
-
+  async queryOperationBySpeciesIds(
+    ids: any,
+    spaceId: string,
+  ): Promise<schema.XOperationArray> {
+    const res = await kernel.queryOperationBySpeciesIds({
+      ids:ids,
+      spaceId:spaceId
+    });
+    return res.data;
+  }
   async loadInfo(info: TargetShare): Promise<ISpeciesItem> {
     if (info.typeName != '未知') {
       this.belongInfo = info;
