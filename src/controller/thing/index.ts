@@ -50,6 +50,21 @@ class ThingController extends Emitter {
     const res = await kernel.queryOperationItems(params)
     return res
   }
+
+  public async getChildTableAttrs(id: string, spaceId: string) {
+      const res = await kernel.querySpeciesAttrs({
+        id,
+        spaceId,
+        recursionOrg:true,
+        recursionSpecies: true,
+        page: {
+          offset: 0,
+          limit: 10000,
+          filter: '',
+        },
+      });
+      return res.data;
+  }
 }
 
 export default new ThingController();
