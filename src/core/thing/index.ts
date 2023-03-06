@@ -1,4 +1,4 @@
-import { kernel } from '../../base';
+import { kernel, model } from '../../base';
 import { INullSpeciesItem } from './ispecies';
 import { SpeciesItem } from './species';
 import { PageRequest } from '../../base/model';
@@ -43,6 +43,11 @@ export const getTableAttrs = async(
     },
   });
   return res.data;
+}
+
+export const formDeisgnSet = async (params: model.OperationModel, createParams:model.OperationItemModel) => {
+  await kernel.updateOperation(params)
+  await kernel.createOperationItems(createParams)
 }
 
 
