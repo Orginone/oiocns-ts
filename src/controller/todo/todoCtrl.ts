@@ -134,6 +134,21 @@ class TodoController extends Emitter {
     });
     return res;
   }
+  /** 获取事件下的属性 */
+  public async getTableAttrs(id:string,spaceId:string,recursionOrg:boolean,recursionSpecies:boolean): Promise<any> {
+    const res = await kernel.querySpeciesAttrs({
+      id:id,
+      spaceId: spaceId,
+      recursionOrg: recursionOrg,
+      recursionSpecies: recursionSpecies,
+      page: {
+        offset: 0,
+        limit:1000,
+        filter: '',
+      },
+    });
+    return res;
+  }
 }
 
 export default new TodoController();
