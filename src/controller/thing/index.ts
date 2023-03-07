@@ -1,17 +1,7 @@
 import { Emitter } from '../../base/common';
 import userCtrl from '../setting';
-import { INullSpeciesItem, DomainTypes, emitter, loadSpeciesTree } from '../../core/';
-import { kernel } from '../../base/index';
-
-interface ILoadFormSetTableParams {
-  id: string;
-  spaceId: string;
-  page: {
-    offset: number;
-    limit: number;
-    filter: string;
-  }
-}
+import { INullSpeciesItem, DomainTypes, emitter, loadSpeciesTree, formDeisgnSet } from '../../core/';
+import { kernel, model } from '../../base/index';
 
 /**
  * 物的控制器
@@ -50,6 +40,30 @@ class ThingController extends Emitter {
   public async querySpeciesOperation(params:any) {
     const res = await kernel.querySpeciesOperation(params)
     return res
+  }
+
+  public async setDesign(params: model.OperationModel, createParams:any) {
+    await formDeisgnSet(params, createParams)
+  }
+
+  public async getOperationItems(params: any) {
+    const res = await kernel.queryOperationItems(params)
+    return res
+  }
+
+  public async getChildTableAttrs(id: string, spaceId: string) {
+      const res = await kernel.querySpeciesAttrs({
+        id,
+        spaceId,
+        recursionOrg:true,
+        recursionSpecies: true,
+        page: {
+          offset: 0,
+          limit: 10000,
+          filter: '',
+        },
+      });
+      return res.data;
   }
 }
 

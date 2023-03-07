@@ -34,7 +34,7 @@ export type { IDict,INullDict } from './target/species/idict';
 export { Dict } from './target/species/dict';
 export { findTargetShare } from './target/targetMap';
 export type { INullSpeciesItem, ISpeciesItem } from './thing';
-export { loadSpeciesTree,queryOperationBySpeciesIds , getTableAttrs} from './thing';
+export { loadSpeciesTree,queryOperationBySpeciesIds , getTableAttrs, formDeisgnSet} from './thing';
 export type { IApplyItem, IApprovalItem, IOrderApplyItem, ITodoGroup } from './todo';
 export {
   loadAppTodo,
