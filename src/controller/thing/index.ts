@@ -1,13 +1,19 @@
-import { Emitter } from '../../base/common';
-import userCtrl from '../setting';
-import { INullSpeciesItem, DomainTypes, emitter, loadSpeciesTree, formDeisgnSet } from '../../core/';
-import { kernel, model } from '../../base/index';
+import { Emitter } from "../../base/common";
+import userCtrl from "../setting";
+import {
+  INullSpeciesItem,
+  DomainTypes,
+  emitter,
+  loadSpeciesTree,
+  formDeisgnSet,
+} from "../../core/";
+import { kernel, model } from "../../base/index";
 
 /**
  * 物的控制器
  */
 class ThingController extends Emitter {
-  private _teamId: string = '';
+  private _teamId: string = "";
   private _species: Map<string, INullSpeciesItem>;
   constructor() {
     super();
@@ -37,33 +43,42 @@ class ThingController extends Emitter {
     return this.teamSpecies;
   }
 
-  public async querySpeciesOperation(params:any) {
-    const res = await kernel.querySpeciesOperation(params)
-    return res
+  public async querySpeciesOperation(params: any) {
+    const res = await kernel.querySpeciesOperation(params);
+    return res;
   }
 
-  public async setDesign(params: model.OperationModel, createParams:any) {
-    await formDeisgnSet(params, createParams)
+  public async setDesign(params: model.OperationModel, createParams: any) {
+    await formDeisgnSet(params, createParams);
   }
 
   public async getOperationItems(params: any) {
-    const res = await kernel.queryOperationItems(params)
-    return res
+    const res = await kernel.queryOperationItems(params);
+    return res;
   }
 
   public async getChildTableAttrs(id: string, spaceId: string) {
-      const res = await kernel.querySpeciesAttrs({
-        id,
-        spaceId,
-        recursionOrg:true,
-        recursionSpecies: true,
-        page: {
-          offset: 0,
-          limit: 10000,
-          filter: '',
-        },
-      });
-      return res.data;
+    const res = await kernel.querySpeciesAttrs({
+      id,
+      spaceId,
+      recursionOrg: true,
+      recursionSpecies: true,
+      page: {
+        offset: 0,
+        limit: 10000,
+        filter: "",
+      },
+    });
+    return res.data;
+  }
+  public async getFormFieldWithPerson(params: any) {
+    const res = await kernel.querySubTargetById(params);
+    return res.data
+  }
+
+  public async getFormFieldWithGroup(params: any) {
+    const res = await kernel.queryJoinedTargetById(params)
+    return res.data
   }
 }
 
